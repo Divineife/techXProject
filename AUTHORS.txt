@@ -1,1 +1,5 @@
 TODO(Checkpoint Requirement 1 of 3): Add team member names and emails.
+
+Divine Faleye <divine_faleye@techexchange.in>
+Alejandro Olivas <alex_olivas@techexchange.in>
+Daniel Oluwarotimi <danielo@techexchange.in>
