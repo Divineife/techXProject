@@ -11,4 +11,6 @@ def make_endpoints(app):
         # to render main.html on the home page.
         return render_template('main.html')
 
+
     # TODO(Project 1): Implement additional routes according to the project requirements.
+
