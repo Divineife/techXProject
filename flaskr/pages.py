@@ -19,6 +19,7 @@ def make_endpoints(app):
     @app.route("/upload", methods=["GET", "POST"])
     def upload_file():
         if request.method == "POST":
+            print(request)
             file = request.files['file']
             upload_instance = Backend()
             upload_instance.upload(file)

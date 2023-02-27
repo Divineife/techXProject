@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>File Upload </title>
-  </head>
-  <body>
-    <h1>Upload a doc to the wiki</h1>
+{% extends "base.html" %}
+
+{% block content %} 
+    <h2>Upload a doc to the wiki</h2>
     <form method="POST" action="/upload" enctype="multipart/form-data">
-      <input type="file" name="wikiname">
-      <br>
-      <button type="submit">Upload File</button>
+      <input type="file" name="file">
+      <button type="submit">Upload </button>
     </form>
-  </body>
-</html>
+{% endblock %}
