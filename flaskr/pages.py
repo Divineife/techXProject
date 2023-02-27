@@ -19,10 +19,11 @@ def make_endpoints(app):
     @app.route("/upload", methods=["GET", "POST"])
     def upload_file():
         if request.method == "POST":
-            print(request)
+            # print(request)
             file = request.files['file']
+            name = request.form.get('wikiname')
             upload_instance = Backend()
-            upload_instance.upload(file)
+            upload_instance.upload(file,name)
             return "File uploaded successfully"
         else:
             return render_template("upload.html")
