@@ -1,4 +1,6 @@
-from flask import render_template
+from flask import Flask, request, render_template
+import os
+from flaskr.backend import Backend
 
 
 def make_endpoints(app):
@@ -13,4 +15,14 @@ def make_endpoints(app):
 
 
     # TODO(Project 1): Implement additional routes according to the project requirements.
+
+    @app.route("/upload", methods=["GET", "POST"])
+    def upload_file():
+        if request.method == "POST":
+            file = request.files['file']
+            upload_instance = Backend()
+            upload_instance.upload(file)
+            return "File uploaded successfully"
+        else:
+            return render_template("upload.html")
 
