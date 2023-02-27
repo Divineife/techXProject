@@ -13,7 +13,10 @@ class Backend:
         self.bucket_name = 'wikis_viewer'
         
     def get_wiki_page(self, name):
-        pass
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs:
+            if blob.name == name: 
+                return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
         blobs = self.storage_client.list_blobs(self.bucket_name)
