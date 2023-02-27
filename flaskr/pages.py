@@ -27,7 +27,7 @@ def make_endpoints(app):
         else:
             return render_template("upload.html")
 
-    @app.route("/pages")
+    @app.route("/pages/")
     def pages():
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names = page_names)
@@ -39,4 +39,9 @@ def make_endpoints(app):
     @app.route("/signUp")
     def signup():
         return render_template('signup.html')
+
+    @app.route("/pages/<page_name>")
+    def wiki_page(page_name):
+        content = instance.get_wiki_page(page_name)
+        return render_template('wikipage.html', content = content, page_name= page_name)
 
