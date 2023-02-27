@@ -27,3 +27,15 @@ def make_endpoints(app):
         else:
             return render_template("upload.html")
 
+    @app.route("/pages")
+    def pages():
+        return render_template('pages.html')
+
+    @app.route("/login")
+    def login():
+        return render_template('login.html')
+
+    @app.route("/signUp")
+    def signup():
+        return render_template('signup.html')
+
