@@ -10,18 +10,18 @@ class Backend:
 
         self.wiki_view = self.storage_client.bucket('wiki_view')
         self.wiki_password = self.storage_client.bucket('wiki_password')
+        self.bucket_name = 'wikis_viewer'
         
     def get_wiki_page(self, name):
         pass
 
     def get_all_page_names(self):
-        pass
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs:
+            print(blob.name)
 
     def upload(self, file, name):  
-            
-        bucket_name = 'wikis_viewer'
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
+        bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
         blob.upload_from_file(file)
 
