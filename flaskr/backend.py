@@ -7,7 +7,7 @@ class Backend:
         self.storage_client = storage.Client()
 
         self.wiki_view = self.storage_client.bucket('wiki_view')
-        self.wiki_password = self.storage_client.bucket('wiki_password')
+        self.wiki_password = self.storage_client.bucket('wiki_passwords')
         
     def get_wiki_page(self, name):
         pass
@@ -18,8 +18,10 @@ class Backend:
     def upload(self):
         pass
 
-    def sign_up(self):
-        pass
+    def sign_up(self, username, password):
+        name = self.wiki_password.blob('Bob.txt')
+        print('name', name)
+        return True
 
     def sign_in(self):
         pass
