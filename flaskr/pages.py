@@ -4,6 +4,7 @@ from flaskr.backend import Backend
 
 
 def make_endpoints(app):
+    instance = Backend()
 
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
@@ -21,15 +22,15 @@ def make_endpoints(app):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            upload_instance = Backend()
-            upload_instance.upload(file,name)
+            instance.upload(file,name)
             return "File uploaded successfully"
         else:
             return render_template("upload.html")
 
     @app.route("/pages")
     def pages():
-        return render_template('pages.html')
+        page_names = instance.get_all_page_names()
+        return render_template('pages.html', page_names = page_names)
 
     @app.route("/login")
     def login():

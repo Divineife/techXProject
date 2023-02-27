@@ -17,8 +17,11 @@ class Backend:
 
     def get_all_page_names(self):
         blobs = self.storage_client.list_blobs(self.bucket_name)
+        blob_names = []
         for blob in blobs:
-            print(blob.name)
+            blob_names.append(blob)
+        # print(type(blob_names[0]))
+        return blob_names
 
     def upload(self, file, name):  
         bucket = self.storage_client.bucket(self.bucket_name)
