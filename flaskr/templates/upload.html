@@ -1,27 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %} 
-<div style="margin-left: 40px ;">
     <h2>Upload a doc to the wiki</h2>
-    
-    <!-- <form method="POST" action="/upload" enctype="multipart/form-data">    
-
-        <input type="file" name="file">
-        <button type="submit">Upload </button>
-    </form> -->
-
-    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data">
-        <label class="sr-only" for="inlineFormInputName2">wiki name</label>
-        <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="wikiname" name="wikiname">
-      
-        <label class="sr-only" for="inlineFormInputGroupUsername2">File</label>
-        <div class="input-group mb-2 mr-sm-2">
-            <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
-        </div>
-      
-        <button type="submit" class="btn btn-secondary mb-2">Upload</button>
-      </form>
-</div>
-    
-
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <button type="submit">Upload </button>
+    </form>
 {% endblock %}

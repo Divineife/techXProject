@@ -17,14 +17,13 @@ class Backend:
     def get_all_page_names(self):
         pass
 
-    def upload(self, file, name):  
+    def upload(self, file):  
             
         bucket_name = 'wikis_viewer'
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
-        print("HERE IS THE FILE \n",file)
-        blob = bucket.blob(name)
-        # blob = bucket.blob(file.filename)
+
+        blob = bucket.blob(file.filename)
         blob.upload_from_file(file)
 
     def sign_up(self):
