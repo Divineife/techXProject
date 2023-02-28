@@ -38,6 +38,7 @@ class Backend:
     def sign_up(self, usernameIn, passwordIn):
         # Check if username is already being used
         blobs = self.storage_client.list_blobs(self.password_bucket)
+        usernameIn = usernameIn.strip()
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower():
                 return False
