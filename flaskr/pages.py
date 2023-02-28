@@ -1,10 +1,13 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, session, flash, url_for
 import os
 from flaskr.backend import Backend
+from flask_login import LoginManager
 
 
 def make_endpoints(app):
     instance = Backend()
+    app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'
+    login_manager = LoginManager()
 
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
@@ -32,16 +35,51 @@ def make_endpoints(app):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names = page_names)
 
-    @app.route("/login")
-    def login():
-        return render_template('login.html')
-
-    @app.route("/signUp")
-    def signup():
-        return render_template('signup.html')
-
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         return render_template('wikipage.html', content = content, page_name= page_name)
+
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        if request.method == 'GET':
+            return render_template('login.html')
+        elif request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+
+            valid = instance.sign_in(username, password)
+            if valid: 
+                session['username'] = username
+                flash("Logged Successful!", 'info')
+                return redirect('/')
+            else:
+                flash("Incorrect Password or Username, Pleasee Try again!", 'error')
+                return redirect('login')
+
+    @app.route("/signup", methods=['GET', 'POST'])
+    def signup():
+        if request.method == 'GET':
+            # Return the HTML page
+            return render_template("signup.html")
+        
+        if request.method == 'POST':
+            # Take in the username and password then redirect them to the sign in page
+            # Get type in answers and call the backend to add them to the sheet
+            username = request.form['username']
+            password = request.form['password']
+            valid = instance.sign_up(username, password)
+            if valid:
+                flash('Account Created Successfully!')
+                return redirect(url_for('login'))
+            else:
+                flash('Username already taken, Please try agian!', 'error')
+                return redirect(url_for('signup'))
+
+    @app.route("/logout")
+    def logout():
+        session.pop('user', None)
+        flash("Successfully Logged out!", 'info')
+        return redirect(url_for("login"))
+
 
