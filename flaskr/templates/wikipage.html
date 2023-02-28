@@ -1,4 +1,4 @@
 {% block content %} 
 <h2>Welcome to {{page_name}}</h2>
-<h4>{{content}}</h4>
+{{content|safe}}
 {% endblock %}
