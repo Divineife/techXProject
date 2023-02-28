@@ -1,7 +1,9 @@
 # TODO(Project 1): Implement Backend according to the requirements.
 from google.cloud import storage
-import pathlib, os
+import pathlib
+import os
 from flask import request
+
 
 class Backend:
     def __init__(self):
@@ -11,11 +13,11 @@ class Backend:
         self.wiki_view = self.storage_client.bucket('wiki_view')
         self.wiki_password = self.storage_client.bucket('wiki_password')
         self.bucket_name = 'wikis_viewer'
-        
+
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
-            if blob.name == name: 
+            if blob.name == name:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
@@ -23,10 +25,9 @@ class Backend:
         blob_names = []
         for blob in blobs:
             blob_names.append(blob)
-        # print(type(blob_names[0]))
         return blob_names
 
-    def upload(self, file, name):  
+    def upload(self, file, name):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
         blob.upload_from_file(file)
@@ -39,4 +40,3 @@ class Backend:
 
     def get_image(self):
         pass
-
