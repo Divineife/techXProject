@@ -52,7 +52,7 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.password_bucket)
         passwordIn_encryption = hashlib.blake2b(passwordIn.encode()).hexdigest()
         for blob in blobs:
-            if blob.name == usernameIn: 
+            if blob.name.lower() == usernameIn.lower(): 
                 return blob.download_as_string().decode('utf-8') == passwordIn_encryption
 
     def get_image(self):
