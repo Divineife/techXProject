@@ -33,12 +33,28 @@
                     <a class="nav-link" href="/upload">About</a>
                   </li>
                   <h4> | </h4>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/signup">Sign Up</a>
-                  </li>
+
+                  {% if "user" not in session %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/signup">Sign Up</a>
+                    </li>
+                  {% elif "user" in session %}
+                    <li class="nav-item">
+                        <h5>{{ session['user'] }}</h5>
+                    </li>
+                    <h4> | </h4>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                  {% endif %}
+
+                  
                 </ul>
               </div>
             </div>
