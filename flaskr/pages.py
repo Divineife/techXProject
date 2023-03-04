@@ -58,12 +58,9 @@ def make_endpoints(app):
     @app.route("/signup", methods=['GET', 'POST'])
     def signup():
         if request.method == 'GET':
-            # Return the HTML page
             return render_template("signup.html")
         
         if request.method == 'POST':
-            # Take in the username and password then redirect them to the sign in page
-            # Get type in answers and call the backend to add them to the sheet
             username = request.form['username']
             password = request.form['password']
             valid = instance.sign_up(username, password)
