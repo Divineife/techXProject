@@ -38,6 +38,10 @@ def make_endpoints(app):
         content = instance.get_wiki_page(page_name)
         return render_template('wikipage.html', content = content, page_name= page_name)
 
+    @app.route("/about")
+    def about_page():
+        return render_template('about.html')    
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'GET':
@@ -76,5 +80,7 @@ def make_endpoints(app):
         session.pop('user', None)
         flash("Successfully Logged out!", 'info')
         return redirect(url_for("login"))
+
+#POST https://cloudshell.googleapis.com/v1/{name=operations/Flask**}:cancel
 
 
