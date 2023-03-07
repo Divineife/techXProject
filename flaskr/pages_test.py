@@ -1,5 +1,5 @@
 from flaskr import create_app
-from flaskr.pages import Backend
+from flaskr.pages import make_endpoints
 import unittest 
 from unittest.mock import MagicMock
 import pytest
@@ -21,7 +21,7 @@ class Test_pages:
         })
         return app
 
-    def Make_endpoints(mock_render_template,):
+    def Make_endpoints(self,mock_render_template,):
         make_endpoints(app, mock_render_template)
     
     @pytest.fixture(scope="class", autouse=True)
@@ -30,23 +30,23 @@ class Test_pages:
         return file
 
     @pytest.fixture(scope="class", autouse=True)
-    def request(self, file):
-        request = MagicMock()
-        request.file.return_value = file
-        return request
+    def fake_request(self, file):
+        fake_request = MagicMock()
+        fake_request.file.return_value = file
+        return fake_request
 
-    def render_template(self, req_file,request):
-        request.file()
-        return request.file
+    def render_template(self,req_file,fake_request):
+        fake_request.file()
+        return fake_request.file
     
     @pytest.fixture(scope="class", autouse=True)
-    def get(self,request):
+    def get(self,fake_request):
         get= MagicMock()
-        get.return_value = request.file
+        get.return_value = fake_request.file
         return get 
 
-    def request_1(self,asked_request,data_set, key_giving ,request):
-        request.files = data_set
+    def request_1(self,asked_request,data_set, key_giving ,fake_request):
+        fake_request.files = data_set
         request.form.return_value.get.return_value =  data_set
         
                 
@@ -67,9 +67,16 @@ class Test_pages:
         assert b'Welcome to the Wiki!' in server_response.data
     
     def test_upload_page(self,client):
-        with client.get('/upload') as server_response:
-            assert server_response.status_code == 302
-    
+        #with client.get('/upload') as server_response:
+         #   assert server_response.status_code == 302
+        with client.session_transaction() as fake_session:
+            fake_session["username"] = 'danny'
+        server_response = client.get('/pages/', data={"username": "flask"})
+        assert server_response.status_code == 200
+        with client:
+            serve_response = client.post('/upload/', data={"username": "flask"})
+            assert server_response.status_code == 200
+
     def test_pages_page(self,client):
         with client.get('/pages/') as server_response:
             assert server_response.status_code == 200
