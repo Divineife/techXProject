@@ -1,9 +1,14 @@
-from flask import Flask, request, render_template, redirect, session, flash, url_for
+from flask import Flask, request, render_template, redirect, session, flash, url_for, send_file
+import os
 from flaskr.backend import Backend
+global set_app
 
-def make_endpoints(app):
-    instance = Backend()
+def make_endpoints(app, mock_app = False,mock_render_template = False):
+    instance = Backend() 
     app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'
+    app = app if mock_app is False else mock_app
+    global render_template
+    render_template if mock_render_template is False else mock_render_template
 
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
@@ -41,7 +46,13 @@ def make_endpoints(app):
 
     @app.route("/about")
     def about_page():
-        return render_template('about.html')    
+        back_end = instance        
+        return render_template('about.html', back_end = back_end)  
+          
+    @app.route('/images/<name>')
+    def get_images(name):
+        #tells browser this is an image
+        return send_file(instance.get_image(name), mimetype='image/jpeg') 
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():

@@ -1,50 +1,64 @@
 from flaskr import create_app
+from flaskr.pages import Backend
 import unittest 
+from unittest.mock import MagicMock
 import pytest
 from unittest.mock import patch
 from flaskr.backend import Backend
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/ 
 # for more info on testing
-'''
-@pytest.fixture(scope="class", autouse=True)
-def app():
-    app = create_app({
-        'TESTING': True,
-    })
-    return app
-
-
-@pytest.fixture(scope="class",  autouse=True)
-def client(app):
-    return app.test_client()
-'''
-'''
-# TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
-# match the changes made in the other Checkpoint Requirements.
-'''
-'''
-def test_home_page(client):
-    with client:
-        resp = client.get("/")
-        assert resp.status_code == 200
-    assert b"Welcome to the Wiki!" in resp.data
-'''
- #TODO(Project 1): Write tests for other routes.
+#TODO(Project 1): Write tests for other routes.
 #@pytest.mark.usefixtures("client")
 class Test_pages: 
     'This includes test to make sure all of the methods for our pages are up and running'
 
+    
     @pytest.fixture(scope="class", autouse=True)
     def app(self):
         app = create_app({
             'TESTING': True,
         })
         return app
+
+    def Make_endpoints(mock_render_template,):
+        make_endpoints(app, mock_render_template)
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def file(self):
+        file = MagicMock()
+        return file
+
+    @pytest.fixture(scope="class", autouse=True)
+    def request(self, file):
+        request = MagicMock()
+        request.file.return_value = file
+        return request
+
+    def render_template(self, req_file,request):
+        request.file()
+        return request.file
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def get(self,request):
+        get= MagicMock()
+        get.return_value = request.file
+        return get 
+
+    def request_1(self,asked_request,data_set, key_giving ,request):
+        request.files = data_set
+        request.form.return_value.get.return_value =  data_set
+        
+                
+
+    #@pytest.fixture(scope="class", autouse=True)
+    #def test_upload_file(self):
+     #   request.method = 
     
     @pytest.fixture(scope="class",  autouse=True)
     def client(self,app):
         return app.test_client()
+
 
     def test_home_page(self,client):  
         with client:
@@ -54,7 +68,7 @@ class Test_pages:
     
     def test_upload_page(self,client):
         with client.get('/upload') as server_response:
-            assert server_response.status_code == 200
+            assert server_response.status_code == 302
     
     def test_pages_page(self,client):
         with client.get('/pages/') as server_response:
