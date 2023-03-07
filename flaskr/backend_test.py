@@ -140,3 +140,11 @@ class Testback_end:
         assert blob.name == 'Sds_file'
         assert blob.assert_called_once
 
+    def test_sign_up():
+        blobs_list.clear()
+        storage_client.list_blobs.return_value = self.blob1('Sds_file', 'Hello Sds', '/file/sds',blob,blobs_list, read)
+        bucket.blob.return_value = ['Sds_file']
+
+    def test_sign_in():
+        storage_client.list_blobs.return_value = [ self.blob1('ads_file', 'Hello Ads','/file/ads', blob,blobs_list, read)]
+        ans = self.backend(storage_client,'Ads', False, False).get_wiki_page('ads_file')
