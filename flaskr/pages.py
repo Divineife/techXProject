@@ -41,7 +41,8 @@ def make_endpoints(app):
     @app.route("/about")
     def about_page():
         back_end = instance        
-        return render_template('about.html', back_end = back_end)    
+        return render_template('about.html', back_end = back_end)  
+          
     @app.route('/images/<name>')
     def get_images(name):
         #tells browser this is an image
