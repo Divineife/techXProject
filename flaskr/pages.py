@@ -1,7 +1,5 @@
 from flask import Flask, request, render_template, redirect, session, flash, url_for
-import os
 from flaskr.backend import Backend
-
 
 def make_endpoints(app):
     instance = Backend()
@@ -26,7 +24,10 @@ def make_endpoints(app):
             instance.upload(file,name)
             return "File uploaded successfully"
         else:
-            return render_template("upload.html")
+            if 'user' in session:
+                return render_template("upload.html")
+            else:
+                return redirect('login')
 
     @app.route("/pages/")
     def pages():
@@ -45,7 +46,11 @@ def make_endpoints(app):
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'GET':
-            return render_template('login.html')
+            if 'user' not in session:
+                return render_template('login.html')
+            else:
+                flash("Already logged in!")
+                return redirect('/')
         elif request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
@@ -62,7 +67,11 @@ def make_endpoints(app):
     @app.route("/signup", methods=['GET', 'POST'])
     def signup():
         if request.method == 'GET':
-            return render_template("signup.html")
+            if 'user' not in session:
+                return render_template('signup.html')
+            else:
+                flash("Already logged in!")
+                return redirect('/')
         
         if request.method == 'POST':
             username = request.form['username']
@@ -77,9 +86,12 @@ def make_endpoints(app):
 
     @app.route("/logout")
     def logout():
-        session.pop('user', None)
-        flash("Successfully Logged out!", 'info')
-        return redirect(url_for("login"))
+        if 'user' not in session:
+            return redirect("login")
+        else:
+            session.pop('user', None)
+            flash("Successfully Logged out!", 'info')
+            return redirect(url_for("login"))
 
 #POST https://cloudshell.googleapis.com/v1/{name=operations/Flask**}:cancel
 
