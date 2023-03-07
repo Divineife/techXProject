@@ -8,7 +8,7 @@ import hashlib
 
 
 class Backend:
-    def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_passwords_buckt = False, Mock_authors_images= False, Mock_BytesIO = False):
+    def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_authors_images= False, Mock_BytesIO = False, Mock_passwords_bucket = False):
 
         self.storage_client = storage.Client() if Mock_storage_client is False else Mock_storage_client
 
