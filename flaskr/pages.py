@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, session, flash, url_for
+from flask import Flask, request, render_template, redirect, session, flash, url_for, send_file
 import os
 from flaskr.backend import Backend
 
@@ -40,7 +40,12 @@ def make_endpoints(app):
 
     @app.route("/about")
     def about_page():
-        return render_template('about.html')    
+        back_end = instance        
+        return render_template('about.html', back_end = back_end)    
+    @app.route('/images/<name>')
+    def get_images(name):
+        #tells browser this is an image
+        return send_file(instance.get_image(name), mimetype='image/jpeg') 
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():

@@ -4,31 +4,7 @@ import pytest
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/ 
 # for more info on testing
-'''
-@pytest.fixture(scope="class", autouse=True)
-def app():
-    app = create_app({
-        'TESTING': True,
-    })
-    return app
-
-
-@pytest.fixture(scope="class",  autouse=True)
-def client(app):
-    return app.test_client()
-'''
-'''
-# TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
-# match the changes made in the other Checkpoint Requirements.
-'''
-'''
-def test_home_page(client):
-    with client:
-        resp = client.get("/")
-        assert resp.status_code == 200
-    assert b"Welcome to the Wiki!" in resp.data
-'''
- #TODO(Project 1): Write tests for other routes.
+#TODO(Project 1): Write tests for other routes.
 #@pytest.mark.usefixtures("client")
 class Test_pages: 
     'This includes test to make sure all of the methods for our pages are up and running'

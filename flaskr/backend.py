@@ -2,6 +2,7 @@
 from google.cloud import storage
 import pathlib
 import os
+from io import BytesIO
 from flask import request
 import hashlib
 
@@ -17,6 +18,9 @@ class Backend:
         self.wiki_password = self.storage_client.bucket('wiki_passwords')
         self.password_bucket = 'wiki_passwords'
         
+        self.authors_images = self.storage_client.bucket('authors-images')
+        self.image_bucket = 'authors-images'
+
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
@@ -56,5 +60,17 @@ class Backend:
             if blob.name.lower() == usernameIn.lower(): 
                 return blob.download_as_string().decode('utf-8') == passwordIn_encryption
 
-    def get_image(self):
-        pass
+    def get_image(self,name):
+        blobs = self.storage_client.list_blobs(self.authors_images)
+        map_author_2_image = {}
+        blob = self.authors_images.blob(name.lower())
+        with blob.open('rb') as f:
+                output = f.read()
+                return BytesIO(output)
+        #map_author_2_image[blob.name.lower()] = blob.public_url
+        #return map_author_2_image
+    
+
+
+bck = Backend()
+bck.get_image('danieloluwarotimi.jpg')
