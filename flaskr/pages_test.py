@@ -19,7 +19,7 @@ class Test_pages:
         })
         return app
 
-    def Make_endpoints(self,mock_render_template,):
+    def Make_endpoints(self,mock_render_template,app):
         make_endpoints(app, mock_render_template)
     
     @pytest.fixture(scope="class", autouse=True)
@@ -45,7 +45,7 @@ class Test_pages:
 
     def request_1(self,asked_request,data_set, key_giving ,fake_request):
         fake_request.files = data_set
-        request.form.return_value.get.return_value =  data_set
+        fake_request.form.return_value.get.return_value =  data_set
         
                 
 
@@ -69,10 +69,10 @@ class Test_pages:
          #   assert server_response.status_code == 302
         with client.session_transaction() as fake_session:
             fake_session["username"] = 'danny'
-        server_response = client.get('/pages/', data={"username": "flask"})
+        server_response = client.get('/upload', data={"username": "flask"})
         assert server_response.status_code == 200
         with client:
-            serve_response = client.post('/upload/', data={"username": "flask"})
+            server_response = client.post('/upload/', data={"username": "flask"})
             assert server_response.status_code == 200
 
     def test_pages_page(self,client):

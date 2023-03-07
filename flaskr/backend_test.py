@@ -130,7 +130,7 @@ class Testback_end:
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image', '/file/sds',blob,blobs_list, read)
         f.read.return_value = 'Hello Sds'
-        BytesIo = self.BytesIO
+        #BytesIo = self.BytesIO
         self.backend(storage_client,'Pds', authors_images).get_image('Sds_file')
         
         storage_client.list_blobs.assert_called_with('Sds')
