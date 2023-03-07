@@ -3,6 +3,8 @@ from flaskr.pages import make_endpoints
 import unittest 
 from unittest.mock import MagicMock
 import pytest
+from unittest.mock import patch
+from flaskr.backend import Backend
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/ 
 # for more info on testing
@@ -64,17 +66,6 @@ class Test_pages:
             assert server_response.status_code == 200
         assert b'Welcome to the Wiki!' in server_response.data
     
-    def test_upload_page(self,client):
-        #with client.get('/upload') as server_response:
-         #   assert server_response.status_code == 302
-        with client.session_transaction() as fake_session:
-            fake_session["username"] = 'danny'
-        server_response = client.get('/upload', data={"username": "flask"})
-        assert server_response.status_code == 200
-        with client:
-            server_response = client.post('/upload/', data={"username": "flask"})
-            assert server_response.status_code == 200
-
     def test_pages_page(self,client):
         with client.get('/pages/') as server_response:
             assert server_response.status_code == 200
@@ -88,4 +79,30 @@ class Test_pages:
         with client.get('/about') as server_response:
             assert server_response.status_code == 200
         assert b'Daniel Oluwarotimi' in server_response.data
-        
+    
+    def test_login_page_get(self, client):
+        server_response = client.get('/login')
+        assert server_response.status_code == 200
+        assert b'Login' in server_response.data
+
+    def test_signup_page_get(self, client):
+        server_response = client.get('/signup')
+        assert server_response.status_code == 200
+        assert b'Sign Up' in server_response.data
+
+    # @patch.object(Backend, 'sign_in', return_value=True)
+    # def test_login_page_put_correct(mock_sign_in, client):
+    #     server_response= client.post('/login', data={"username": "flask", 'password':'test'})
+    #     assert server_response.status_code == 200
+    #     assert b'Incorrect Password or Username' in server_response.data
+    
+    def test_upload_page(self,client):
+        #with client.get('/upload') as server_response:
+         #   assert server_response.status_code == 302
+        with client.session_transaction() as fake_session:
+            fake_session["user"] = 'danny'
+        server_response = client.get('/upload', data={"username": "flask"})
+        assert server_response.status_code == 200
+        # with client:
+        #     server_response = client.post('/upload/', data={"username": "flask"})
+        #     assert server_response.status_code == 200

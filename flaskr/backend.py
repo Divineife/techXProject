@@ -8,7 +8,7 @@ import hashlib
 
 
 class Backend:
-    def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_authors_images= False, Mock_BytesIO = False):
+    def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_authors_images= False, Mock_BytesIO = False, Mock_passwords_bucket = False):
 
         self.storage_client = storage.Client() if Mock_storage_client is False else Mock_storage_client
 
@@ -16,7 +16,7 @@ class Backend:
         self.bucket_name = 'wikis_viewer' if Mock_bucket_name is False else Mock_bucket_name
 
         self.wiki_password = self.storage_client.bucket('wiki_passwords')
-        self.password_bucket = 'wiki_passwords'
+        self.password_bucket = 'wiki_passwords' if Mock_passwords_bucket is False else Mock_passwords_bucket
         
         self.authors_images = self.storage_client.bucket('authors-images') if Mock_authors_images is False else Mock_authors_images
         self.image_bucket = 'authors-images'

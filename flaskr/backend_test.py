@@ -79,12 +79,12 @@ class Testback_end:
         print(blobs_list)
         return blob    
     
-    def backend(self,storage_client,wiki_name, authors_images):
-        return Backend(storage_client, wiki_name, authors_images, self.BytesIO)
+    def backend(self,storage_client,wiki_name, authors_images, password_name):
+        return Backend(storage_client, wiki_name, authors_images, self.BytesIO, password_name)
 
     def test_get_wiki_page(self, blob, storage_client, list_blobs,blobs_list, bucket,read):
         storage_client.list_blobs.return_value = [ self.blob1('ads_file', 'Hello Ads','/file/ads', blob,blobs_list, read)]
-        ans = self.backend(storage_client,'Ads', False).get_wiki_page('ads_file') 
+        ans = self.backend(storage_client,'Ads', False, False).get_wiki_page('ads_file') 
         
         storage_client.list_blobs.assert_called_with('Ads')
         blob.download_as_string().decode.assert_called_once()
@@ -95,7 +95,7 @@ class Testback_end:
     
     def test_get_wiki_page_fail(self, blob, storage_client, list_blobs,blobs_list, bucket,read):
         storage_client.list_blobs.return_value = [ self.blob1('ads_file', 'Hello Ads','/file/ads', blob,blobs_list, read)]
-        ans = self.backend(storage_client,'Ads', False).get_wiki_page('ads_file_not_found') 
+        ans = self.backend(storage_client,'Ads', False, False).get_wiki_page('ads_file_not_found') 
         
         storage_client.list_blobs.assert_called_with('Ads')
         blob.download_as_string().decode.assert_called_once()
@@ -107,7 +107,7 @@ class Testback_end:
     def test_get_all_page(self, blob, storage_client, list_blobs,blobs_list,bucket,read):
         blobs_list.clear()
         storage_client.list_blobs.return_value = [ self.blob1('Sds_file', 'Hello Sds','/file/sds',blob,blobs_list, read),self.blob1('SdsF_file', 'Hello Sds section f','/file/sds',blob,blobs_list, read) ]
-        self.backend(storage_client,'Sds', False).get_all_page_names() 
+        self.backend(storage_client,'Sds', False, False).get_all_page_names() 
         
         storage_client.list_blobs.assert_called_with('Sds')
         assert blobs_list == [('Sds_file', 'Hello Sds'), ('SdsF_file', 'Hello Sds section f')]
@@ -118,7 +118,7 @@ class Testback_end:
         storage_client.list_blobs.return_value = self.blob1('Sds_file', 'Hello Sds', '/file/sds',blob,blobs_list, read)
         bucket.blob.return_value = ['Sds_file']
         
-        self.backend(storage_client,'Sds',False).upload('/file/sds','Sds_file')
+        self.backend(storage_client,'Sds',False, False).upload('/file/sds','Sds_file')
         
         storage_client.list_blobs.assert_called_with('Sds')
         assert blob.upload_from_file == '/file/sds'
@@ -130,8 +130,13 @@ class Testback_end:
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image', '/file/sds',blob,blobs_list, read)
         f.read.return_value = 'Hello Sds'
+<<<<<<< HEAD
         #BytesIo = self.BytesIO
         self.backend(storage_client,'Pds', authors_images).get_image('Sds_file')
+=======
+        BytesIo = self.BytesIO
+        self.backend(storage_client,'Pds', authors_images, False).get_image('Sds_file')
+>>>>>>> c147ee3b6fc021d2c06e192e798200997511fd2b
         
         storage_client.list_blobs.assert_called_with('Sds')
         blob.open.assert_called_with('rb')
@@ -140,3 +145,11 @@ class Testback_end:
         assert blob.name == 'Sds_file'
         assert blob.assert_called_once
 
+    def test_sign_up():
+        blobs_list.clear()
+        storage_client.list_blobs.return_value = self.blob1('Sds_file', 'Hello Sds', '/file/sds',blob,blobs_list, read)
+        bucket.blob.return_value = ['Sds_file']
+
+    def test_sign_in():
+        storage_client.list_blobs.return_value = [ self.blob1('ads_file', 'Hello Ads','/file/ads', blob,blobs_list, read)]
+        ans = self.backend(storage_client,'Ads', False, False).get_wiki_page('ads_file')
