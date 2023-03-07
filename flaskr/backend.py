@@ -8,18 +8,19 @@ import hashlib
 
 
 class Backend:
-    def __init__(self):
+    def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_authors_images= False, Mock_BytesIO = False):
 
-        self.storage_client = storage.Client()
+        self.storage_client = storage.Client() if Mock_storage_client is False else Mock_storage_client
 
         self.wiki_view = self.storage_client.bucket('wiki_view')
-        self.bucket_name = 'wikis_viewer'
+        self.bucket_name = 'wikis_viewer' if Mock_bucket_name is False else Mock_bucket_name
 
         self.wiki_password = self.storage_client.bucket('wiki_passwords')
         self.password_bucket = 'wiki_passwords'
         
-        self.authors_images = self.storage_client.bucket('authors-images')
+        self.authors_images = self.storage_client.bucket('authors-images') if Mock_authors_images is False else Mock_authors_images
         self.image_bucket = 'authors-images'
+        self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
@@ -59,18 +60,14 @@ class Backend:
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower(): 
                 return blob.download_as_string().decode('utf-8') == passwordIn_encryption
-
+    
     def get_image(self,name):
-        blobs = self.storage_client.list_blobs(self.authors_images)
-        map_author_2_image = {}
         blob = self.authors_images.blob(name.lower())
         with blob.open('rb') as f:
-                output = f.read()
-                return BytesIO(output)
+            output = f.read()
+            return self.BytesIO(output) 
         #map_author_2_image[blob.name.lower()] = blob.public_url
         #return map_author_2_image
     
 
 
-bck = Backend()
-bck.get_image('danieloluwarotimi.jpg')

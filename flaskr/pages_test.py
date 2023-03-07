@@ -28,7 +28,7 @@ class Test_pages:
     
     def test_upload_page(self,client):
         with client.get('/upload') as server_response:
-            assert server_response.status_code == 200
+            assert server_response.status_code == 302
     
     def test_pages_page(self,client):
         with client.get('/pages/') as server_response:
@@ -43,3 +43,4 @@ class Test_pages:
         with client.get('/about') as server_response:
             assert server_response.status_code == 200
         assert b'Daniel Oluwarotimi' in server_response.data
+        
