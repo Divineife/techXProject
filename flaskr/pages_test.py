@@ -1,6 +1,8 @@
 from flaskr import create_app
 import unittest 
 import pytest
+from unittest.mock import patch
+from flaskr.backend import Backend
 
 # See https://flask.palletsprojects.com/en/2.2.x/testing/ 
 # for more info on testing
@@ -67,3 +69,19 @@ class Test_pages:
         with client.get('/about') as server_response:
             assert server_response.status_code == 200
         assert b'Daniel Oluwarotimi' in server_response.data
+    
+    def test_login_page_get(self, client):
+        server_response = client.get('/login')
+        assert server_response.status_code == 200
+        assert b'Login' in server_response.data
+
+    def test_signup_page_get(self, client):
+        server_response = client.get('/signup')
+        assert server_response.status_code == 200
+        assert b'Sign Up' in server_response.data
+
+    @patch.object(Backend, 'sign_in', return_value=True)
+    def test_login_page_put_correct(mock_sign_in, client):
+        server_response= client.post('/login', data={"username": "flask", 'password':'test'})
+        assert server_response.status_code == 200
+        assert b'Incorrect Password or Username' in server_response.data
