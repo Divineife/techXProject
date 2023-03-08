@@ -48,6 +48,10 @@ class Test_pages:
             assert server_response.status_code == 200
         assert b'Daniel Oluwarotimi' in server_response.data
     
+    def test_get_image(self, client):
+        with client('/image/3') as server_response:
+            assert server_response.status_code == 200 
+    
     def test_login_page_get(self, client):
         server_response = client.get('/login')
         assert server_response.status_code == 200
