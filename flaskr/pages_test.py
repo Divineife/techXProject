@@ -36,10 +36,12 @@ class Test_pages:
     def test_pages_page(self,client):
         with client.get('/pages/') as server_response:
             assert server_response.status_code == 200
+        assert b'Pages contained in this Wiki' in server_response.data        
 
     def test_page_in_pages(self,client):
         with client.get('/pages/5') as server_response:
             assert server_response.status_code == 200
+        assert b'Welcome to' in server_response.data  
 
     def test_about_page(self,client):
         with client.get('/about') as server_response:
@@ -95,6 +97,7 @@ class Test_pages:
             fake_session["user"] = 'danny'
         server_response = client.get('/upload', data={"username": "flask"})
         assert server_response.status_code == 200
+        assert b"Upload" in server_response.data
 
     def test_login_page_get_loggedin(self, client):
         server_response = client.get('/login')
