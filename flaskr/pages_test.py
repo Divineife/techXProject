@@ -90,11 +90,34 @@ class Test_pages:
         assert server_response.status_code == 200
         assert b'Sign Up' in server_response.data
 
-    # @patch.object(Backend, 'sign_in', return_value=True)
-    # def test_login_page_put_correct(mock_sign_in, client):
-    #     server_response= client.post('/login', data={"username": "flask", 'password':'test'})
-    #     assert server_response.status_code == 200
-    #     assert b'Incorrect Password or Username' in server_response.data
+    @patch.object(Backend, 'sign_in', return_value=True)
+    def test_login_page_put_correct(self, mock_signin, client):
+        server_response= client.post('/login', data={"username": "flask", 'password':'test'})
+        assert server_response.status_code == 302
+        assert b'"/"' in server_response.data
+
+    @patch.object(Backend, 'sign_in', return_value=False)
+    def test_login_page_put_incorrect(self, mock_signin, client):
+        server_response= client.post('/login', data={"username": "flask", 'password':'test'})
+        assert server_response.status_code == 302
+        assert b'"login"' in server_response.data
+
+    @patch.object(Backend, 'sign_up', return_value=True)
+    def test_signup_page_put_correct(self, mock_signin, client):
+        server_response= client.post('/signup', data={"username": "flask", 'password':'test'})
+        assert server_response.status_code == 302
+        assert b'"/login"' in server_response.data
+
+    @patch.object(Backend, 'sign_up', return_value=False)
+    def test_signup_page_put_incorrect(self, mock_signin, client):
+        server_response= client.post('/signup', data={"username": "flask", 'password':'test'})
+        assert server_response.status_code == 302
+        assert b'"/signup"' in server_response.data
+
+    def test_logout_page_get_not_loggedin(self, client):
+        server_response = client.get('/logout')
+        assert server_response.status_code == 302
+        assert b'"/login"' in server_response.data
     
     def test_upload_page_not_loggedin(self, client):
         server_response = client.get('/upload')
@@ -111,3 +134,18 @@ class Test_pages:
         # with client:
         #     server_response = client.post('/upload/', data={"username": "flask"})
         #     assert server_response.status_code == 200
+
+    def test_login_page_get_loggedin(self, client):
+        server_response = client.get('/login')
+        assert server_response.status_code == 302
+        assert b'"/"' in server_response.data
+
+    def test_signup_page_get_loggedin(self, client):
+        server_response = client.get('/signup')
+        assert server_response.status_code == 302
+        assert b'"/"' in server_response.data
+
+    def test_logout_page_get_loggedin(self, client):
+        server_response = client.get('/logout')
+        assert server_response.status_code == 302
+        assert b'"/login"' in server_response.data
