@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 # TODO(Project 1): Write tests for Backend methods.
 
 class Testback_end:
-# note to self create a seperate class for fixture
 
 
     @pytest.fixture(scope="class", autouse=True)
@@ -95,17 +94,12 @@ class Testback_end:
     def blobs_list(self):
         return []
 
-    def blob1(self,object_name, contained_script,file ,blob,blobs_list ,read, hashlib):
-        
+    def blob1(self,object_name, contained_script,file ,blob,blobs_list ,read, hashlib):     
         blob.download_as_string.return_value.decode.return_value=contained_script
-        #blob.name.lower1.return_value = object_name
         blob.name=object_name
-        #blob.lower = object_name
-        #blob.name = blob.lower
         blob.contains= (object_name,contained_script)
         blobs_list.append(blob.contains) 
         blob.upload_from_file = file
-        #print(self.BytesIO)
         blob.read.return_value = contained_script
         print(blobs_list)
         hashlib.blake2b.return_value.hexdigest.return_value=contained_script
@@ -163,7 +157,6 @@ class Testback_end:
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image', '/file/sds',blob,blobs_list, read, hashlib)
         f.read.return_value = 'Hello Sds'
-        BytesIo = self.BytesIO
         self.backend(storage_client,'Pds', authors_images, False, False).get_image('Sds_file')
         
         storage_client.list_blobs.assert_called_with('Sds')

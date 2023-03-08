@@ -11,8 +11,7 @@ from flaskr.backend import Backend
 #TODO(Project 1): Write tests for other routes.
 #@pytest.mark.usefixtures("client")
 class Test_pages: 
-    'This includes test to make sure all of the methods for our pages are up and running'
-    
+    'This includes test to make sure all of the methods for our pages are up and running'    
     
     @pytest.fixture(scope="class", autouse=True)
     def app(self):

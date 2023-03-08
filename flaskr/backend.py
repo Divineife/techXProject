@@ -12,10 +12,10 @@ The pages.py will call functions inside this Backend class to be able to verify 
 
 Typical usage example:
 
-  valid = sign_in(username, password)
+  valid = sign_in(username, password) #return True if credentials is Valid else False
   upload(file, name)
   content = get_wiki_page(page_nam)
-  valid = sign_up(username, password)
+  valid = sign_up(username, password) #return True if credentials is Valid else False(in this case the username has been taking)
   page_names = get_all_page_names()
 """
 

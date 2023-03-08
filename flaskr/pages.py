@@ -100,6 +100,3 @@ def make_endpoints(app):
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
 
-#POST https://cloudshell.googleapis.com/v1/{name=operations/Flask**}:cancel
-
-
