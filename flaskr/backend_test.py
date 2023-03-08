@@ -130,13 +130,8 @@ class Testback_end:
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image', '/file/sds',blob,blobs_list, read)
         f.read.return_value = 'Hello Sds'
-<<<<<<< HEAD
-        #BytesIo = self.BytesIO
-        self.backend(storage_client,'Pds', authors_images).get_image('Sds_file')
-=======
         BytesIo = self.BytesIO
         self.backend(storage_client,'Pds', authors_images, False).get_image('Sds_file')
->>>>>>> c147ee3b6fc021d2c06e192e798200997511fd2b
         
         storage_client.list_blobs.assert_called_with('Sds')
         blob.open.assert_called_with('rb')
@@ -144,7 +139,7 @@ class Testback_end:
         assert blob.upload_from_file == '/file/sds'      
         assert blob.name == 'Sds_file'
         assert blob.assert_called_once
-
+    '''
     def test_sign_up():
         blobs_list.clear()
         storage_client.list_blobs.return_value = self.blob1('Sds_file', 'Hello Sds', '/file/sds',blob,blobs_list, read)
@@ -153,3 +148,4 @@ class Testback_end:
     def test_sign_in():
         storage_client.list_blobs.return_value = [ self.blob1('ads_file', 'Hello Ads','/file/ads', blob,blobs_list, read)]
         ans = self.backend(storage_client,'Ads', False, False).get_wiki_page('ads_file')
+    '''

@@ -96,6 +96,11 @@ class Test_pages:
     #     assert server_response.status_code == 200
     #     assert b'Incorrect Password or Username' in server_response.data
     
+    def test_upload_page_not_loggedin(self, client):
+        server_response = client.get('/upload')
+        assert server_response.status_code == 302
+        assert b'"login"' in server_response.data
+    
     def test_upload_page(self,client):
         #with client.get('/upload') as server_response:
          #   assert server_response.status_code == 302
