@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 # TODO(Project 1): Write tests for Backend methods.
 
 class Testback_end:
-# note to self create a seperate class for fixture
+    'This includes test to make sure all of the methods inside of our backend are given the correct outputs without using and dependencies'
 
 
     @pytest.fixture(scope="class", autouse=True)
