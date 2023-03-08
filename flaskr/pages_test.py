@@ -49,11 +49,6 @@ class Test_pages:
         fake_request.files = data_set
         request.form.return_value.get.return_value =  data_set
         
-                
-
-    #@pytest.fixture(scope="class", autouse=True)
-    #def test_upload_file(self):
-     #   request.method = 
     
     @pytest.fixture(scope="class",  autouse=True)
     def client(self,app):
@@ -120,15 +115,10 @@ class Test_pages:
         assert b'"/login"' in server_response.data
     
     def test_upload_page(self,client):
-        #with client.get('/upload') as server_response:
-         #   assert server_response.status_code == 302
         with client.session_transaction() as fake_session:
             fake_session["user"] = 'danny'
         server_response = client.get('/upload', data={"username": "flask"})
         assert server_response.status_code == 200
-        # with client:
-        #     server_response = client.post('/upload/', data={"username": "flask"})
-        #     assert server_response.status_code == 200
 
     def test_login_page_get_loggedin(self, client):
         server_response = client.get('/login')
