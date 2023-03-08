@@ -3,6 +3,17 @@ import os
 from flaskr.backend import Backend
 global set_app
 
+"""This will route us to the desired location that the user chooses
+
+In most pages a user will have a navbar where they will have specific options where they can go on the page if they are logged in or not. It will also call methods in the Backend to be able to verify information that the user has provided to either login or signup.
+
+Typical usage example:
+
+  return render_template('main.html')
+  if logged in: return_template('upload.html')
+  return redirect('login')
+"""
+
 def make_endpoints(app):
     instance = Backend() 
     app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'

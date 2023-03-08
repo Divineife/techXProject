@@ -11,7 +11,8 @@ from flaskr.backend import Backend
 #TODO(Project 1): Write tests for other routes.
 #@pytest.mark.usefixtures("client")
 class Test_pages: 
-    'This includes test to make sure all of the methods for our pages are up and running'    
+    'This includes test to make sure all of the routes in page.py will take us to the correct location depending on the login state'
+
     
     @pytest.fixture(scope="class", autouse=True)
     def app(self):
@@ -38,7 +39,6 @@ class Test_pages:
 
     def test_page_in_pages(self,client):
         with client.get('/pages/5') as server_response:
-        #server_response = client.get('/pages/1')
             assert server_response.status_code == 200
 
     def test_about_page(self,client):
