@@ -6,6 +6,19 @@ from io import BytesIO
 from flask import request
 import hashlib
 
+"""The backend to connect to the Google Cloud to upload and read information
+
+The pages.py will call functions inside this Backend class to be able to verify or get information that the user prompted. The Backend talks to our google bucket that will read or upload from certain files that we specified. It will also check to verify user inputs are valid when given.
+
+Typical usage example:
+
+  valid = sign_in(username, password)
+  upload(file, name)
+  content = get_wiki_page(page_nam)
+  valid = sign_up(username, password)
+  page_names = get_all_page_names()
+"""
+
 
 class Backend:
     def __init__(self, Mock_storage_client= False, Mock_bucket_name = False, Mock_authors_images= False, Mock_BytesIO = False, Mock_passwords_bucket = False, Mock_hashlib=False):
