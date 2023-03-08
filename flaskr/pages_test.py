@@ -12,7 +12,7 @@ from flaskr.backend import Backend
 #@pytest.mark.usefixtures("client")
 class Test_pages: 
     'This includes test to make sure all of the methods for our pages are up and running'
-
+    
     
     @pytest.fixture(scope="class", autouse=True)
     def app(self):
@@ -20,34 +20,6 @@ class Test_pages:
             'TESTING': True,
         })
         return app
-
-    def Make_endpoints(self,mock_render_template,app):
-        make_endpoints(app, mock_render_template)
-    
-    @pytest.fixture(scope="class", autouse=True)
-    def file(self):
-        file = MagicMock()
-        return file
-
-    @pytest.fixture(scope="class", autouse=True)
-    def fake_request(self, file):
-        fake_request = MagicMock()
-        fake_request.file.return_value = file
-        return fake_request
-
-    def render_template(self,req_file,fake_request):
-        fake_request.file()
-        return fake_request.file
-    
-    @pytest.fixture(scope="class", autouse=True)
-    def get(self,fake_request):
-        get= MagicMock()
-        get.return_value = fake_request.file
-        return get 
-
-    def request_1(self,asked_request,data_set, key_giving ,fake_request):
-        fake_request.files = data_set
-        fake_request.form.return_value.get.return_value =  data_set
         
     
     @pytest.fixture(scope="class",  autouse=True)
