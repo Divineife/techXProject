@@ -21,7 +21,7 @@ class Test_pages:
         })
         return app
 
-    def Make_endpoints(self,mock_render_template,):
+    def Make_endpoints(self,mock_render_template,app):
         make_endpoints(app, mock_render_template)
     
     @pytest.fixture(scope="class", autouse=True)
@@ -47,7 +47,7 @@ class Test_pages:
 
     def request_1(self,asked_request,data_set, key_giving ,fake_request):
         fake_request.files = data_set
-        request.form.return_value.get.return_value =  data_set
+        fake_request.form.return_value.get.return_value =  data_set
         
     
     @pytest.fixture(scope="class",  autouse=True)
@@ -113,6 +113,11 @@ class Test_pages:
         server_response = client.get('/logout')
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
+    
+    def test_upload_page_not_loggedin(self, client):
+        server_response = client.get('/upload')
+        assert server_response.status_code == 302
+        assert b'"login"' in server_response.data
     
     def test_upload_page(self,client):
         with client.session_transaction() as fake_session:
