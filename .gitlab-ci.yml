@@ -4,6 +4,6 @@ lint:
  stage: test
  script:
  - pip install yapf
- - yapf --recursive --style google .
+ - yapf --recursive --diff --style google .
  only:
  - pushes
