@@ -81,8 +81,6 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output) 
-        #map_author_2_image[blob.name.lower()] = blob.public_url
-        #return map_author_2_image
     
 
 
