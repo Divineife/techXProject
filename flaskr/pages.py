@@ -14,8 +14,8 @@ Typical usage example:
 """
 
 
-def make_endpoints(app,back_end= False):
-    instance = Backend() if back_end is False else back_end 
+def make_endpoints(app, back_end=False):
+    instance = Backend() if back_end is False else back_end
     app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
