@@ -27,7 +27,8 @@ class Backend:
                  Mock_authors_images=False,
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
-                 Mock_hashlib=False):
+                 Mock_hashlib=False,
+                 Mock_categories_bucket=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -44,6 +45,9 @@ class Backend:
         ) if Mock_authors_images is False else Mock_authors_images
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
+
+        self.wiki_categories = self.storage_client.bucket('categories')
+        self.categories_bucket = 'wiki_categories' if Mock_categories_bucket is False else Mock_categories_bucket
 
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
@@ -95,3 +99,10 @@ class Backend:
             return self.BytesIO(output)
         #map_author_2_image[blob.name.lower()] = blob.public_url
         #return map_author_2_image
+
+    def get_categories(self):
+        blobs = self.storage_client.list_blobs(self.categories_bucket)
+        categories = []
+        for blob in blobs:
+            categories.append(blob)
+        return categories
