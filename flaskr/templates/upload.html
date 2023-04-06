@@ -19,6 +19,15 @@
             <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
         </div>
       
+        <label class="sr-only" for="inlineFormInputCategorie">Categories</label>
+        <div class="mb-2 mr-sm-2">
+            <select name="Category">
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-secondary mb-2">Upload</button>
       </form>
 </div>
