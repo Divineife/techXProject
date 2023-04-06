@@ -104,5 +104,6 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.categories_bucket)
         categories = []
         for blob in blobs:
-            categories.append(blob)
+            category = blob.name.replace("/", "")
+            categories.append(category)
         return categories
