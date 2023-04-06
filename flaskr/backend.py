@@ -3,7 +3,7 @@ from google.cloud import storage
 import pathlib
 import os
 from io import BytesIO
-from flask import request
+from flask import request, session
 import hashlib
 """The backend to connect to the Google Cloud to upload and read information
 
@@ -61,7 +61,21 @@ class Backend:
     def upload(self, file, name):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
+        blob.metadata = {'user_id' : session.get('user')}
         blob.upload_from_file(file)
+    
+    def delete(self, name):
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs:
+            if blob.name == name:
+                cur_page = blob
+
+        user_id = session.get('user')
+        if user_id and blob.metadata.get('user_id') == user_id:
+            cur_page.delete()
+            return True
+        else:
+            return False
 
     def sign_up(self, usernameIn, passwordIn):
         # Check if username is already being used

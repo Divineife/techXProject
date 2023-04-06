@@ -4,6 +4,8 @@ from flask import Flask
 
 import logging
 
+import secrets
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -13,6 +15,8 @@ logging.basicConfig(level=logging.DEBUG)
 def create_app(test_config=None):
     # Create and configure the app.
     app = Flask(__name__, instance_relative_config=True)
+
+    #setup for secret keys
 
     # This is the default secret key used for login sessions
     # By default the dev environment uses the key 'dev'

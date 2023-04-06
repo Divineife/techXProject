@@ -112,3 +112,10 @@ def make_endpoints(app):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
+    
+    @app.route("/delete/<page_name>", methods=['GET', 'POST'])
+    def delete(page_name):
+        if 'user' not in session:
+            return redirect("/pages")
+        else:
+            return instance.delete(page_name)
