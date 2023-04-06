@@ -62,9 +62,9 @@ class Backend:
             blob_names.append(blob)
         return blob_names
 
-    def upload(self, file, name):
-        bucket = self.storage_client.bucket(self.bucket_name)
-        blob = bucket.blob(name)
+    def upload(self, file, name, category):
+        bucket = self.storage_client.bucket(self.categories_bucket)
+        blob = bucket.blob(category + "/" + name)
         blob.upload_from_file(file)
 
     def sign_up(self, usernameIn, passwordIn):
