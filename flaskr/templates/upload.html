@@ -21,9 +21,9 @@
       
         <label class="sr-only" for="inlineFormInputCategorie">Categories</label>
         <div class="mb-2 mr-sm-2">
-            <select name="Category">
+            <select name="category">
                 {% for category in categories %}
-                    <option value="{{ category }}">{{ category }}</option>
+                    <option name="category" value="{{ category }}">{{ category }}</option>
                 {% endfor %}
             </select>
         </div>
