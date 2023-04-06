@@ -32,7 +32,8 @@ def make_endpoints(app, back_end=False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            instance.upload(file, name)
+            category = request.form['category']
+            instance.upload(file, name, category)
             return "File uploaded successfully"
         else:
             if 'user' in session:
