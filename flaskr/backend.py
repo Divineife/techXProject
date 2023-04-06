@@ -61,9 +61,9 @@ class Backend:
     def upload(self, file, name):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
-        blob.metadata = {'user_id' : session.get('user')}
+        blob.metadata = {'user_id': session.get('user')}
         blob.upload_from_file(file)
-    
+
     def delete(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
