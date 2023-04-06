@@ -36,7 +36,8 @@ def make_endpoints(app, back_end=False):
             return "File uploaded successfully"
         else:
             if 'user' in session:
-                return render_template("upload.html")
+                categories = instance.get_categories()
+                return render_template("upload.html", categories=categories)
             else:
                 return redirect('login')
 
