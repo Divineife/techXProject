@@ -56,11 +56,25 @@ class Backend:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        blob_names = []
+        blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
+        # blob_names = []
+        # for blob in blobs:
+        #     blob_names.append(blob)
+        # return blob_names
+
+        categories = {}
         for blob in blobs:
-            blob_names.append(blob)
-        return blob_names
+            category = blob.name.replace("/", "")
+            print("CATEGORY:", category)
+            blobs_pages = self.storage_client.list_blobs(self.categories_bucket, prefix=category)
+            print("BLOBS PAGES:", blobs_pages)
+            categories[category] = []
+            for page in blobs_pages:
+                categories[category].append(page.name)
+                print("PAGE NAME", page.name)
+            print("CATEGORIES:", categories)
+
+        return categories
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.categories_bucket)
@@ -101,9 +115,10 @@ class Backend:
         #return map_author_2_image
 
     def get_categories(self):
-        blobs = self.storage_client.list_blobs(self.categories_bucket)
+        blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
         categories = []
         for blob in blobs:
             category = blob.name.replace("/", "")
             categories.append(category)
+            print("CATEGORY", category)
         return categories
