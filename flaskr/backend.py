@@ -69,7 +69,7 @@ class Backend:
 
     def checkUser(self, name, page_id):
         user_id = session.get('user')
-        if user_id and page_id:
+        if user_id == page_id:
             return True
         return False
 
@@ -80,7 +80,7 @@ class Backend:
             if blob.name == name:
                 cur_page = blob
                 user_id = session.get('user')
-                # print("METADATA BLOB", cur_page.metadata,name)
+                print("METADATA BLOB", cur_page.metadata,name)
                 if user_id and cur_page.metadata.get('user_id') == user_id:
                     cur_page.delete()
                     return True
