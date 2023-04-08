@@ -49,7 +49,10 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
-                return [blob.download_as_string().decode('utf-8'), blob.metadata.get('user_id')]
+                return [
+                    blob.download_as_string().decode('utf-8'),
+                    blob.metadata.get('user_id')
+                ]
 
     def get_all_page_names(self):
         blobs = self.storage_client.list_blobs(self.bucket_name)

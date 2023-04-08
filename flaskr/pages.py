@@ -46,16 +46,16 @@ def make_endpoints(app):
         return render_template('pages.html', page_names=page_names)
 
     @app.route("/pages/<page_name>")
-   
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         page_id = content[1]
-        authorized = instance.checkUser(page_name,page_id)
+        authorized = instance.checkUser(page_name, page_id)
         return render_template('wikipage.html',
                                content=content[0],
-                               page_name=page_name,authored = authorized)
+                               page_name=page_name,
+                               authored=authorized)
 
-    @app.route("/delete/page", methods=["GET","POST"])
+    @app.route("/delete/page", methods=["GET", "POST"])
     def delete():
         page_name = request.form.get('page_name')
         if 'user' not in session:
@@ -126,5 +126,3 @@ def make_endpoints(app):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
-
-    
