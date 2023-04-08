@@ -49,7 +49,7 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
-                return blob.download_as_string().decode('utf-8')
+                return [blob.download_as_string().decode('utf-8'), blob.metadata.get('user_id')]
 
     def get_all_page_names(self):
         blobs = self.storage_client.list_blobs(self.bucket_name)
@@ -64,18 +64,26 @@ class Backend:
         blob.metadata = {'user_id': session.get('user')}
         blob.upload_from_file(file)
 
+    def checkUser(self, name, page_id):
+        user_id = session.get('user')
+        if user_id and page_id:
+            return True
+        return False
+
     def delete(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
+            # print("BLOB ", blob,name)
             if blob.name == name:
                 cur_page = blob
-
-        user_id = session.get('user')
-        if user_id and blob.metadata.get('user_id') == user_id:
-            cur_page.delete()
-            return True
-        else:
-            return False
+                user_id = session.get('user')
+                # print("METADATA BLOB", cur_page.metadata,name)
+                if user_id and cur_page.metadata.get('user_id') == user_id:
+                    cur_page.delete()
+                    return True
+                else:
+                    return False
+        return False
 
     def sign_up(self, usernameIn, passwordIn):
         # Check if username is already being used

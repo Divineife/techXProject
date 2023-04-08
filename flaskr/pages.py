@@ -33,7 +33,7 @@ def make_endpoints(app):
             file = request.files['file']
             name = request.form.get('wikiname')
             instance.upload(file, name)
-            return "File uploaded successfully"
+            return redirect('pages')
         else:
             if 'user' in session:
                 return render_template("upload.html")
@@ -46,11 +46,25 @@ def make_endpoints(app):
         return render_template('pages.html', page_names=page_names)
 
     @app.route("/pages/<page_name>")
+   
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
+        page_id = content[1]
+        authorized = instance.checkUser(page_name,page_id)
         return render_template('wikipage.html',
-                               content=content,
-                               page_name=page_name)
+                               content=content[0],
+                               page_name=page_name,authored = authorized)
+
+    @app.route("/delete/page", methods=["GET","POST"])
+    def delete():
+        page_name = request.form.get('page_name')
+        if 'user' not in session:
+            return redirect("login")
+        else:
+            if instance.delete(page_name):
+                return redirect("/pages/")
+            else:
+                flash("You are not authorized to delete this page")
 
     @app.route("/about")
     def about_page():
@@ -113,9 +127,4 @@ def make_endpoints(app):
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
 
-    @app.route("/delete/<page_name>", methods=['GET', 'POST'])
-    def delete(page_name):
-        if 'user' not in session:
-            return redirect("/pages")
-        else:
-            return instance.delete(page_name)
+    
