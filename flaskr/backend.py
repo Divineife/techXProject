@@ -64,7 +64,7 @@ class Backend:
 
         categories = {}
         for blob in blobs:
-            category = blob.name.replace("/", "")
+            category = blob.name[:-1]
             print("CATEGORY:", category)
             blobs_pages = self.storage_client.list_blobs(self.categories_bucket, prefix=category)
             print("BLOBS PAGES:", blobs_pages)
@@ -118,7 +118,7 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
         categories = []
         for blob in blobs:
-            category = blob.name.replace("/", "")
+            category = blob.name[:-1]
             categories.append(category)
             print("CATEGORY", category)
         return categories
