@@ -65,7 +65,7 @@ class Backend:
             page_name = blob.name
             page_category = blob.metadata.get("category")
             categories_w_pages[page_category].append(page_name)
-            
+
         print(categories_w_pages)
 
         return categories_w_pages
@@ -122,3 +122,9 @@ class Backend:
                      ,"Events"
                      ,"Other"]
         return categories
+
+    def get_page_category(self, name):
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs:
+            if blob.name == name:
+                return blob.metadata.get("category")
