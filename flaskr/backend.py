@@ -55,10 +55,10 @@ class Backend:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        #blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
-        # blob_names = []
-        # for blob in blobs:
-        #     blob_names.append(blob)
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        blob_names = []
+        for blob in blobs:
+            blob_names.append(blob)
         # return blob_names
 
         categories = self.get_categories()
@@ -66,16 +66,17 @@ class Backend:
         for category in categories:
             categories_w_pages[category] = []
 
-        blobs_pages = self.storage_client.list_blobs(self.wiki_view)
+        blobs_pages = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs_pages:
             page_name = blob.name
-            page_category = blob.getmetadata
-            print(page_category)
+            page_category = blob.metadata.get("category")
+            categories_w_pages[page_category].append(page_name)
+            print(categories_w_pages)
 
-        return categories
+        return blob_names
 
     def upload(self, file, name, category):
-        bucket = self.storage_client.bucket(self.wiki_view)
+        bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
         blob.metadata = {'category': category, 'user_id' : session.get('user')}
         blob.upload_from_file(file)
