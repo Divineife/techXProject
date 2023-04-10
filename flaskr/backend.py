@@ -3,7 +3,7 @@ from google.cloud import storage
 import pathlib
 import os
 from io import BytesIO
-from flask import request
+from flask import request, session
 import hashlib
 """The backend to connect to the Google Cloud to upload and read information
 
@@ -27,8 +27,7 @@ class Backend:
                  Mock_authors_images=False,
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
-                 Mock_hashlib=False,
-                 Mock_categories_bucket=False):
+                 Mock_hashlib=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -46,8 +45,8 @@ class Backend:
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
-        self.wiki_categories = self.storage_client.bucket('categories')
-        self.categories_bucket = 'wiki_categories' if Mock_categories_bucket is False else Mock_categories_bucket
+        #self.wiki_categories = self.storage_client.bucket('categories')
+        #self.categories_bucket = 'wiki_categories' if Mock_categories_bucket is False else Mock_categories_bucket
 
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
@@ -56,29 +55,29 @@ class Backend:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
+        #blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
         # blob_names = []
         # for blob in blobs:
         #     blob_names.append(blob)
         # return blob_names
 
-        categories = {}
-        for blob in blobs:
-            category = blob.name[:-1]
-            print("CATEGORY:", category)
-            blobs_pages = self.storage_client.list_blobs(self.categories_bucket, prefix=category)
-            print("BLOBS PAGES:", blobs_pages)
-            categories[category] = []
-            for page in blobs_pages:
-                categories[category].append(page.name)
-                print("PAGE NAME", page.name)
-            print("CATEGORIES:", categories)
+        categories = self.get_categories()
+        categories_w_pages = {}
+        for category in categories:
+            categories_w_pages[category] = []
+
+        blobs_pages = self.storage_client.list_blobs(self.wiki_view)
+        for blob in blobs_pages:
+            page_name = blob.name
+            page_category = blob.getmetadata
+            print(page_category)
 
         return categories
 
     def upload(self, file, name, category):
-        bucket = self.storage_client.bucket(self.categories_bucket)
-        blob = bucket.blob(category + "/" + name)
+        bucket = self.storage_client.bucket(self.wiki_view)
+        blob = bucket.blob(name)
+        blob.metadata = {'category': category, 'user_id' : session.get('user')}
         blob.upload_from_file(file)
 
     def sign_up(self, usernameIn, passwordIn):
@@ -115,10 +114,15 @@ class Backend:
         #return map_author_2_image
 
     def get_categories(self):
-        blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
-        categories = []
-        for blob in blobs:
-            category = blob.name[:-1]
-            categories.append(category)
-            print("CATEGORY", category)
+        # blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
+        # categories = []
+        # for blob in blobs:
+        #     category = blob.name[:-1]
+        #     categories.append(category)
+        #     print("CATEGORY", category)
+        categories = ["TechExchange"
+                     ,"Internships"
+                     ,"Clubs"
+                     ,"Events"
+                     ,"Other"]
         return categories
