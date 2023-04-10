@@ -50,9 +50,11 @@ def make_endpoints(app, back_end=False):
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
+        page_category = instance.get_page_category(page_name)
         return render_template('wikipage.html',
                                content=content,
-                               page_name=page_name)
+                               page_name=page_name,
+                               page_category=page_category)
 
     @app.route("/about")
     def about_page():
