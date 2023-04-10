@@ -55,12 +55,6 @@ class Backend:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        blob_names = []
-        for blob in blobs:
-            blob_names.append(blob)
-        # return blob_names
-
         categories = self.get_categories()
         categories_w_pages = {}
         for category in categories:
@@ -71,6 +65,7 @@ class Backend:
             page_name = blob.name
             page_category = blob.metadata.get("category")
             categories_w_pages[page_category].append(page_name)
+            
         print(categories_w_pages)
 
         return categories_w_pages
