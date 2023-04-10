@@ -71,9 +71,9 @@ class Backend:
             page_name = blob.name
             page_category = blob.metadata.get("category")
             categories_w_pages[page_category].append(page_name)
-            print(categories_w_pages)
+        print(categories_w_pages)
 
-        return blob_names
+        return categories_w_pages
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
