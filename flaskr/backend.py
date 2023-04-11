@@ -73,7 +73,7 @@ class Backend:
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
-        blob.metadata = {'category': category, 'user_id' : session.get('user')}
+        blob.metadata = {'category': category}
         blob.upload_from_file(file)
 
     def sign_up(self, usernameIn, passwordIn):
