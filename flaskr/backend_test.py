@@ -105,8 +105,7 @@ class Testback_end:
     def blobs_list(self):
         return []
 
-    def blob1(self, object_name, contained_script, file, blob, blobs_list, read,
-              hashlib, metadata):
+    def blob1(self, object_name, contained_script, file, blob, blobs_list, read, hashlib, metadata, metadata_data):
         blob.download_as_string.return_value.decode.return_value = contained_script
         blob.name = object_name
         blob.contains = (object_name, contained_script)
@@ -115,7 +114,7 @@ class Testback_end:
         blob.read.return_value = contained_script
         hashlib.blake2b.return_value.hexdigest.return_value = contained_script
         blob.metadata = metadata
-        blob.metadata.get.return_value = "TechExchange"
+        blob.metadata.get.return_value = metadata_data
         return blob
 
     def backend(self, storage_client, wiki_name, authors_images, password_name,
@@ -127,7 +126,7 @@ class Testback_end:
                            bucket, read, hashlib, metadata):
         storage_client.list_blobs.return_value = [
             self.blob1('ads_file', 'Hello Ads', '/file/ads', blob, blobs_list,
-                       read, hashlib, metadata)
+                       read, hashlib, metadata, None)
         ]
         ans = self.backend(storage_client, 'Ads', False, False,
                            False).get_wiki_page('ads_file')
@@ -143,7 +142,7 @@ class Testback_end:
                                 blobs_list, bucket, read, hashlib, metadata):
         storage_client.list_blobs.return_value = [
             self.blob1('ads_file', 'Hello Ads', '/file/ads', blob, blobs_list,
-                       read, hashlib, metadata)
+                       read, hashlib, metadata, None)
         ]
         ans = self.backend(storage_client, 'Ads', False, False,
                            False).get_wiki_page('ads_file_not_found')
@@ -160,9 +159,9 @@ class Testback_end:
         blobs_list.clear()
         storage_client.list_blobs.return_value = [
             self.blob1('Hello Sds', 'Hello Sds', '/file/sds', blob, blobs_list,
-                       read, hashlib, metadata),
+                       read, hashlib, metadata, "TechExchange"),
             self.blob1('Hello Sds', 'Hello Sds section f', '/file/sds', blob,
-                       blobs_list, read, hashlib, metadata)
+                       blobs_list, read, hashlib, metadata, "TechExchange")
         ]
         pages_list = self.backend(storage_client, 'Sds', False, False,
                      False).get_all_page_names()
@@ -180,7 +179,7 @@ class Testback_end:
         blobs_list.clear()
         storage_client.list_blobs.return_value = self.blob1(
             'Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list, read,
-            hashlib, metadata)
+            hashlib, metadata, "TechExchange")
         bucket.blob.return_value = ['Sds_file']
 
         self.backend(storage_client, 'Sds', False, False,
@@ -196,7 +195,8 @@ class Testback_end:
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image',
                                                       '/file/sds', blob,
-                                                      blobs_list, read, hashlib, metadata)
+                                                      blobs_list, read, hashlib, metadata,
+                                                      "TechExchange")
         f.read.return_value = 'Hello Sds'
         self.backend(storage_client, 'Pds', authors_images, False,
                      False).get_image('Sds_file')
@@ -212,7 +212,7 @@ class Testback_end:
                      read, hashlib, metadata):
         storage_client.list_blobs.return_value = [
             self.blob1('fake_username', 'Hello123', '/file/passwords', blob,
-                       blobs_list, read, hashlib, metadata)
+                       blobs_list, read, hashlib, metadata, "TechExchange")
         ]
         ans = self.backend(storage_client, False, False, 'Passwords',
                            hashlib).sign_in('fake_username', 'Hello123')
@@ -227,7 +227,7 @@ class Testback_end:
         blobs_list.clear()
         storage_client.list_blobs.return_value = self.blob1(
             'username_file', 'password', '/file/password', blob, blobs_list,
-            read, hashlib, metadata)
+            read, hashlib, metadata, "TechExchange")
         bucket.blob.return_value = ['username_file']
 
         self.backend(storage_client, 'password', False, 'Passwords',
