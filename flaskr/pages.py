@@ -48,10 +48,10 @@ def make_endpoints(app):
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
-        page_id = content[1]
+        page_id = instance.get_author(page_name)
         authorized = instance.checkUser(page_name, page_id)
         return render_template('wikipage.html',
-                               content=content[0],
+                               content=content,
                                page_name=page_name,
                                authored=authorized)
 

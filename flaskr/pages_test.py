@@ -127,3 +127,11 @@ class Test_pages:
         server_response = client.get('/logout')
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
+
+    def test_delete_page(self, client):
+        with client.session_transaction() as fake_session:
+            fake_session["user"] = 'danny'
+        server_response = client.post('/delete/testing',
+                                      data={"username": "flask"})
+        assert server_response.status_code == 200
+        assert b"/delete/wiki" in server_response.data
