@@ -5,6 +5,7 @@ import os
 from io import BytesIO
 from flask import request
 import hashlib
+import json
 """The backend to connect to the Google Cloud to upload and read information
 
 The pages.py will call functions inside this Backend class to be able to verify or get information that the user prompted. The Backend talks to our google bucket that will read or upload from certain files that we specified. It will also check to verify user inputs are valid when given.
@@ -27,7 +28,8 @@ class Backend:
                  Mock_authors_images=False,
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
-                 Mock_hashlib=False):
+                 Mock_hashlib=False,
+                 Mock_comment_bucket= False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -45,6 +47,9 @@ class Backend:
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
+        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')
+        self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
+        self.json_comments = 'Comments'
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
@@ -95,3 +100,25 @@ class Backend:
             return self.BytesIO(output)
         #map_author_2_image[blob.name.lower()] = blob.public_url
         #return map_author_2_image
+
+    
+    def checkPage_in_commentbucket(self):
+        blobs = self.wiki_users_comments.list_blobs
+        for blob in blobs:
+            if blob.name == self.json_comments:
+                return blob
+        return False
+
+
+    def add_comment(self, page_comments, page_name,user_name):
+        blob = self.wiki_users_comments.blob(self.json_comments)
+        with blob.open("w") as write_file:
+            wiki_pages = json.load(write_file)
+
+            page = wiki_pages[page_name]
+            page[user_name].append(page_comments)
+        blob.upload_from_string(page_comments, content_type='application/json')
+
+    def get_comment(self, post):
+        pass
+        
