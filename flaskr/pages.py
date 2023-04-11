@@ -112,3 +112,23 @@ def make_endpoints(app,back_end= False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
+
+'''
+    @app.route("/add_comment/page_name/<page_name_id>", method=['POST'])
+    def add_comment(page_name, page_name_id):
+        if request.method == 'POST':
+            isPage_in_bucket = instance.checkPage_in_commentbucket(page_name)
+            if isPage_in_bucket == False:
+                map_usercomment_toPage = {}
+                comment = request.form.get('user_comment')
+                map_usercomment_toPage = {page_name_id:{user_id: [comment]}}
+                page_comment = json.dumps(comment)
+
+            else:
+                map_comment_to_page = json.load(isPage_in_bucket)
+                page = map_comment_to_page[page_name]
+                page[user_id].append(comment)
+                page_comment= json.dumps(comment)
+
+            instance.add_comment(page_name, page_comment,)
+'''
