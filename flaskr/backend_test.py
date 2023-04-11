@@ -237,3 +237,23 @@ class Testback_end:
         assert blob.upload_from_file == '/file/password'
         assert blob.name == 'username_file'
         assert blob.assert_called_once
+
+    def test_get_categories(self, blob, storage_client, list_blobs, blobs_list,bucket, read, hashlib, metadata):
+        categories = self.backend(storage_client, False, False, False, False).get_categories()
+
+        assert categories == ["TechExchange"
+                              ,"Internships"
+                              ,"Clubs"
+                              ,"Events"
+                              ,"Other"]
+
+    def test_get_page_category(self, blob, storage_client, list_blobs, blobs_list, bucket, read, hashlib, metadata):
+        storage_client.list_blobs.return_value = [self.blob1('Hello Sds', 'Hello Sds', '/file/sds', blob, blobs_list, read, hashlib, metadata, "TechExchange")]
+
+        page_category = self.backend(storage_client, 'Sds', False, False,
+                     False).get_page_category("Hello Sds")
+
+        storage_client.list_blobs.assert_called_with('Sds')
+        assert page_category == "TechExchange"
+        assert blob.assert_called_once
+        
