@@ -46,29 +46,31 @@ def make_endpoints(app,back_end= False):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>", methods= ['POST'])
+    @app.route("/pages/<page_name>", methods= ["GET", "POST"])
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         #comments = instance.get_comments()
         username = session['user']
+        comment = request.form.get('user_comment')
         if request.method == 'POST':
-            isPage_in_bucket = instance.checkPage_in_commentbucket(page_name)
+            isPage_in_bucket = instance.checkPage_in_commentbucket()
             if isPage_in_bucket == False:
                 map_usercomment_toPage = {}
-                comment = request.form.get('user_comment')
                 map_usercomment_toPage = {page_name:{username: [comment]}}
                 page_comment = json.dumps(comment)
-    
             else:
-                map_comment_to_page = json.load(isPage_in_bucket)
+                map_comment_to_page = json.loads(isPage_in_bucket)
                 page = map_comment_to_page[page_name]
                 page[username].append(comment)
                 page_comment= json.dumps(comment)
             instance.add_comment(page_name, page_comment,username)
-        
-        return render_template('wikipage.html',
-                               content=content,
-                               page_name=page_name)
+            return render_template('wikipage.html',
+                                    content=content,
+                                    page_name=page_name)
+        elif request.method == "GET":
+            return render_template('wikipage.html',
+                                    content=content,
+                                    page_name=page_name)
         
 
     @app.route("/about")
