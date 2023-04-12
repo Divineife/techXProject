@@ -250,31 +250,34 @@ class Testback_end:
 
     def test_delete(self, blob, storage_client, list_blobs, blobs_list, bucket,
                     read, hashlib, metadata, session):
-        storage_client.list_blobs.return_value = [self.blob1(
-            'Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list, read,
-            hashlib, metadata, {'user': 'dfaleye'})]
+        storage_client.list_blobs.return_value = [
+            self.blob1('Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list,
+                       read, hashlib, metadata, {'user': 'dfaleye'})
+        ]
 
         session.get.return_value = 'dfaleye'
         self.backend(storage_client, 'password', False, 'Passwords', hashlib,
                      session).delete('Sds_file')
-        
+
         assert blob.delete() == ""
         session.get.assert_called_with('user')
         blob.metadata.get.assert_called_with('user_id')
 
     def test_checkUser(self, blob, storage_client, list_blobs, blobs_list,
-                       bucket, read, hashlib, metadata,session):
+                       bucket, read, hashlib, metadata, session):
         session.get.return_value = 'dfaleye'
-        condition = self.backend(storage_client, 'password', False, 'Passwords', hashlib,
-                     session).checkUser('Sds_file','dfaleye')
+        condition = self.backend(storage_client, 'password', False, 'Passwords',
+                                 hashlib,
+                                 session).checkUser('Sds_file', 'dfaleye')
         session.get.assert_called_with('user')
         assert condition == True
 
     def test_get_author(self, blob, storage_client, list_blobs, blobs_list,
                         bucket, read, hashlib, metadata, session):
-        storage_client.list_blobs.return_value = [self.blob1(
-            'Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list, read,
-            hashlib, metadata, {'user': 'dfaleye'})]
+        storage_client.list_blobs.return_value = [
+            self.blob1('Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list,
+                       read, hashlib, metadata, {'user': 'dfaleye'})
+        ]
 
         session.get.return_value = 'dfaleye'
 
@@ -282,5 +285,3 @@ class Testback_end:
                      session).get_author('Sds_file')
 
         blob.metadata.get.assert_called_with('user_id')
-        
-

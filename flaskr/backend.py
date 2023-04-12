@@ -88,7 +88,7 @@ class Backend:
                 cur_page = blob
                 print("SESSION SELF!!!", self.session)
                 user_id = self.session.get('user')
-                
+
                 if user_id and cur_page.metadata.get('user_id') == user_id:
                     cur_page.delete()
                     return True
