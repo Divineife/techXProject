@@ -45,9 +45,6 @@ class Backend:
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
-        #self.wiki_categories = self.storage_client.bucket('categories')
-        #self.categories_bucket = 'wiki_categories' if Mock_categories_bucket is False else Mock_categories_bucket
-
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
@@ -110,12 +107,6 @@ class Backend:
         #return map_author_2_image
 
     def get_categories(self):
-        # blobs = self.storage_client.list_blobs(self.categories_bucket, delimiter="/", include_trailing_delimiter=True)
-        # categories = []
-        # for blob in blobs:
-        #     category = blob.name[:-1]
-        #     categories.append(category)
-        #     print("CATEGORY", category)
         categories = ["TechExchange"
                      ,"Internships"
                      ,"Clubs"
