@@ -15,8 +15,8 @@ Typical usage example:
 """
 
 
-def make_endpoints(app,back_end= False):
-    instance = Backend() if back_end is False else back_end 
+def make_endpoints(app, back_end=False):
+    instance = Backend() if back_end is False else back_end
     app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
@@ -33,11 +33,13 @@ def make_endpoints(app,back_end= False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            instance.upload(file, name)
+            category = request.form['category']
+            instance.upload(file, name, category)
             return "File uploaded successfully"
         else:
             if 'user' in session:
-                return render_template("upload.html")
+                categories = instance.get_categories()
+                return render_template("upload.html", categories=categories)
             else:
                 return redirect('login')
 
@@ -46,7 +48,7 @@ def make_endpoints(app,back_end= False):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>", methods= ['POST'])
+    @app.route("/pages/<page_name>", methods= ['GET', 'POST'])
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         #comments = instance.get_comments()
