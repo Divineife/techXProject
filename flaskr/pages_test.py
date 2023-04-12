@@ -31,12 +31,27 @@ class Test_pages:
             assert server_response.status_code == 200
         assert b'Welcome to the Wiki!' in server_response.data
 
-    def test_pages_page(self, client):
+    @patch.object(
+        Backend,
+        'get_all_page_names',
+        return_value=['hello', 'iterate', 'through', 'this', 'mock_object'])
+    def test_pages_page(self, mock_get_all_page_names, client):
         with client.get('/pages/') as server_response:
             assert server_response.status_code == 200
         assert b'Pages contained in this Wiki' in server_response.data
 
-    def test_page_in_pages(self, client):
+    @patch.object(
+        Backend,
+        'get_wiki_page',
+        return_value=['hello', 'iterate', 'through', 'this', 'mock_object'])
+    @patch.object(
+    Backend,
+    'get_author',
+    return_value='userid')
+    @patch.object(Backend,
+    'checkUser',
+    return_value = True)
+    def test_page_in_pages(self, mock_get_wiki_page,mock_get_author, mock_checkUser, client):
         with client.get('/pages/5') as server_response:
             assert server_response.status_code == 200
         assert b'Welcome to' in server_response.data
