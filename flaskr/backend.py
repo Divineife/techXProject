@@ -103,7 +103,7 @@ class Backend:
 
     
     def checkPage_in_commentbucket(self):
-        blobs = self.wiki_users_comments.list_blobs
+        blobs = self.storage_client.list_blobs(self.comment_bucket)
         for blob in blobs:
             if blob.name == self.json_comments:
                 return blob
