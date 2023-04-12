@@ -72,6 +72,7 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
+                print("INNER", True)
                 return blob.metadata.get('user_id')
 
     def checkUser(self, name, page_id):
@@ -83,12 +84,11 @@ class Backend:
     def delete(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
-
             if blob.name == name:
                 cur_page = blob
                 print("SESSION SELF!!!", self.session)
                 user_id = self.session.get('user')
-
+                
                 if user_id and cur_page.metadata.get('user_id') == user_id:
                     cur_page.delete()
                     return True
