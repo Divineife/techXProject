@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, redirect, session, flash, url
 import os
 from flaskr.backend import Backend
 global set_app
-import json
 """This will route us to the desired location that the user chooses
 
 In most pages a user will have a navbar where they will have specific options where they can go on the page if they are logged in or not. It will also call methods in the Backend to be able to verify information that the user has provided to either login or signup.
@@ -15,8 +14,8 @@ Typical usage example:
 """
 
 
-def make_endpoints(app,back_end= False):
-    instance = Backend() if back_end is False else back_end 
+def make_endpoints(app, back_end=False):
+    instance = Backend() if back_end is False else back_end
     app.secret_key = b'0490214e639a85e4e47041cde14a56b219c0b10e709e40d9dfafe4a4e46e8807'
     # Flask uses the "app.route" decorator to call methods when users
     # go to a specific route on the project's website.
@@ -46,32 +45,12 @@ def make_endpoints(app,back_end= False):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>", methods= ["GET", "POST"])
+    @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
-        #comments = instance.get_comments()
-        username = session['user']
-        comment = request.form.get('user_comment')
-        if request.method == 'POST':
-            isPage_in_bucket = instance.checkPage_in_commentbucket()
-            if isPage_in_bucket == False:
-                map_usercomment_toPage = {}
-                map_usercomment_toPage = {page_name:{username: [comment]}}
-                page_comment = json.dumps(comment)
-            else:
-                map_comment_to_page = json.loads(isPage_in_bucket)
-                page = map_comment_to_page[page_name]
-                page[username].append(comment)
-                page_comment= json.dumps(comment)
-            instance.add_comment(page_name, page_comment,username)
-            return render_template('wikipage.html',
-                                    content=content,
-                                    page_name=page_name)
-        elif request.method == "GET":
-            return render_template('wikipage.html',
-                                    content=content,
-                                    page_name=page_name)
-        
+        return render_template('wikipage.html',
+                               content=content,
+                               page_name=page_name)
 
     @app.route("/about")
     def about_page():
@@ -133,8 +112,3 @@ def make_endpoints(app,back_end= False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
-
-
-    #@app.route("/add_comment/page_name/<page_name_id>", method=['POST'])
-    #def add_comment(page_name, page_name_id):
-     #   pass
