@@ -50,6 +50,7 @@ class Backend:
         self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')
         self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
         self.json_comments = 'Comments'
+    
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
@@ -102,22 +103,24 @@ class Backend:
         #return map_author_2_image
 
     
-    def checkPage_in_commentbucket(self):
-        blobs = self.storage_client.list_blobs(self.comment_bucket)
-        for blob in blobs:
-            if blob.name == self.json_comments:
-                return blob
-        return False
-
+    def get_commentBucket(self):       
+        blob = self.wiki_users_comments.get_blob(self.json_comments)
+        if blob.content_type != "application/json":
+            return {}
+        wiki_pages = json.loads(blob.download_as_string())
+        return wiki_pages
+        
+#get_blob
 
     def add_comment(self, page_comments, page_name,user_name):
-        blob = self.wiki_users_comments.blob(self.comment_bucket)
+        blob = self.wiki_users_comments.get_blob(self.json_comments)
+        print(blob.name)
         #with blob.open("w") as write_file:
-        wiki_pages = json.loads(blob.download_as_string())
+        #wiki_pages = json.loads(blob.download_as_string())
 
-        page = wiki_pages[page_name]
-        page[user_name].append(page_comments)
-        blob.upload_from_string(page_comments, content_type='application/json')
+        #page = wiki_pages[page_name]
+        #page[user_name].append(page_comments)
+        blob.upload_from_string(json.dumps(page_comments), content_type='application/json')
 
     def get_comment(self, post):
         pass

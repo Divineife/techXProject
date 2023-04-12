@@ -52,26 +52,37 @@ def make_endpoints(app, back_end=False):
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         #comments = instance.get_comments()
-        username = session['user']
         if request.method == 'POST':
-            isPage_in_bucket = instance.checkPage_in_commentbucket(page_name)
-            if isPage_in_bucket == False:
-                map_usercomment_toPage = {}
-                comment = request.form.get('user_comment')
-                map_usercomment_toPage = {page_name:{username: [comment]}}
-                page_comment = json.dumps(comment)
-    
+            username = session['user']
+            #this is a json object 
+            pages_comments = instance.get_commentBucket()
+            comment = request.form.get('user_comment')
+            if page_name not in pages_comments:
+                pages_comments[page_name] = {username: [comment]}
+            elif username in pages_comments[page_name]:
+                comments_inpage = pages_comments[page_name] 
+                comments_inpage[username].append(comment)
+                #page_comment= json.dumps(comment)
             else:
-                map_comment_to_page = json.load(isPage_in_bucket)
-                page = map_comment_to_page[page_name]
-                page[username].append(comment)
-                page_comment= json.dumps(comment)
-            instance.add_comment(page_name, page_comment,username)
-        
-        return render_template('wikipage.html',
-                               content=content,
-                               page_name=page_name)
-        
+                comments_inpage = pages_comments[page_name] 
+                comments_inpage[username] = [comment] 
+            print(request.method)
+            print(pages_comments)            
+            instance.add_comment( pages_comments, page_name,username)
+            pages_comments = instance.get_commentBucket()
+            comments_inpage = pages_comments[page_name] 
+            print(page_name)
+            return redirect(f"/pages/{page_name}")
+        elif request.method == 'GET':  
+            pages_comments = instance.get_commentBucket()
+            print(request.method)        
+            if page_name not in pages_comments:
+                pages_comments[page_name] = {}
+            comments_inpage = pages_comments[page_name] 
+            return render_template('wikipage.html',
+                                content=content,
+                                page_name=page_name, comments_inpage=comments_inpage )
+     
 
     @app.route("/about")
     def about_page():
@@ -133,8 +144,3 @@ def make_endpoints(app, back_end=False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
-
-
-    #@app.route("/add_comment/page_name/<page_name_id>", method=['POST'])
-    #def add_comment(page_name, page_name_id):
-     #   pass
