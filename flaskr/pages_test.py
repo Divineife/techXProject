@@ -126,10 +126,6 @@ class Test_pages:
         assert server_response.status_code == 302
         assert b'"/"' in server_response.data
 
-    #def test_get_image(self, client):
-    #   server_response = client.get('/login')
-    #  assert server_response.status_code == 302
-    # assert b'"/"' in server_response.data
 
     def test_signup_page_get_loggedin(self, client):
         server_response = client.get('/signup')
