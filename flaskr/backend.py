@@ -111,12 +111,12 @@ class Backend:
 
 
     def add_comment(self, page_comments, page_name,user_name):
-        blob = self.wiki_users_comments.blob(self.json_comments)
-        with blob.open("w") as write_file:
-            wiki_pages = json.load(write_file)
+        blob = self.wiki_users_comments.blob(self.comment_bucket)
+        #with blob.open("w") as write_file:
+        wiki_pages = json.loads(blob.download_as_string())
 
-            page = wiki_pages[page_name]
-            page[user_name].append(page_comments)
+        page = wiki_pages[page_name]
+        page[user_name].append(page_comments)
         blob.upload_from_string(page_comments, content_type='application/json')
 
     def get_comment(self, post):
