@@ -117,7 +117,7 @@ class Backend:
             passwordIn.encode()).hexdigest()
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower():
-                print(blob.name.lower())
+                # print(blob.name.lower())
                 return blob.download_as_string().decode(
                     'utf-8') == passwordIn_encryption
 
