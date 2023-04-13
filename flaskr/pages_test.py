@@ -1,4 +1,5 @@
 from flaskr import create_app
+from flask import session
 from flaskr.pages import make_endpoints
 import unittest
 from unittest.mock import MagicMock
@@ -40,20 +41,13 @@ class Test_pages:
         assert server_response.status_code == 200
         assert b'Pages contained in this Wiki' in server_response.data
 
-<<<<<<< HEAD
-    @patch.object(
-        Backend,
-        'get_wiki_page',
-        return_value=['hello', 'iterate', 'through', 'this', 'mock_object'])
-    def test_page_in_pages(self, mock_get_wiki_page, client):
-        server_response = client.get('/pages/5')
-=======
+    @patch.object(Backend, 'get_commentBucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
     @patch.object(Backend, 'get_wiki_page', return_value = ['hello', 'iterate', 'through', 'this', 'mock_object'])
-    def test_page_in_pages(self,mock_get_wiki_page, client):
+    def test_page_inPages_GET(self,mock_get_commentBucket,mock_get_wiki_page,client):
         server_response = client.get('/pages/ADS')
->>>>>>> 6340479057939d971c4c4259a67ed598d4c65604
         assert server_response.status_code == 200
         assert b'Welcome to' in server_response.data
+    
 
     def test_about_page(self, client):
         with client.get('/about') as server_response:
@@ -146,3 +140,14 @@ class Test_pages:
         server_response = client.get('/logout')
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
+    
+    #@patch(session, return_value = {'user':'fake_user'})
+    @patch.object(Backend, 'get_commentBucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
+    @patch.object(Backend, 'add_comment', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
+    @patch.object(Backend, 'get_wiki_page', return_value = ['hello', 'iterate', 'through', 'this', 'mock_object'])
+    def test_page_inPages_POST(self,mock_get_commentBucket, mock_add_comment,mock_get_wiki_page,client):
+        with client.session_transaction() as fake_session:
+            fake_session["user"] = 'danny'         
+        server_response = client.post('/pages/ADS') 
+        assert server_response.status_code == 302
+        assert b'ADS' in server_response.data

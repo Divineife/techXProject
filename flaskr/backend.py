@@ -29,7 +29,9 @@ class Backend:
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
-                 Mock_comment_bucket= False):
+                 Mock_comment_bucket= False,
+                 Mock_json_comments= False,
+                 Mock_json = False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -47,12 +49,14 @@ class Backend:
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
-        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')
-        self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
-        self.json_comments = 'Comments'
+        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')  if Mock_comment_bucket is False else Mock_comment_bucket
+        self.comment_bucket = 'wiki_users_comments'
+        self.json_comments = 'Comments' if Mock_json_comments is False else Mock_json_comments
+        self.json = json if Mock_json is False else Mock_json
     
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
+        print('Code runs here', blobs)
         for blob in blobs:
             if blob.name == name:
                 return blob.download_as_string().decode('utf-8')
@@ -107,21 +111,13 @@ class Backend:
         blob = self.wiki_users_comments.get_blob(self.json_comments)
         if blob.content_type != "application/json":
             return {}
-        wiki_pages = json.loads(blob.download_as_string())
+        wiki_pages = self.json.loads(blob.download_as_string())
         return wiki_pages
         
-#get_blob
 
-    def add_comment(self, page_comments, page_name,user_name):
+    def add_comment(self, page_comments):
         blob = self.wiki_users_comments.get_blob(self.json_comments)
-        print(blob.name)
-        #with blob.open("w") as write_file:
-        #wiki_pages = json.loads(blob.download_as_string())
 
-        #page = wiki_pages[page_name]
-        #page[user_name].append(page_comments)
-        blob.upload_from_string(json.dumps(page_comments), content_type='application/json')
+        return blob.upload_from_string(self.json.dumps(page_comments), content_type='application/json')
 
-    def get_comment(self, post):
-        pass
         

@@ -33,15 +33,14 @@ def make_endpoints(app, back_end=False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            category = request.form['category']
-            instance.upload(file, name, category)
+            instance.upload(file, name)
             return "File uploaded successfully"
         else:
             if 'user' in session:
-                categories = instance.get_categories()
-                return render_template("upload.html", categories=categories)
+                return render_template("upload.html")
             else:
                 return redirect('login')
+
 
     @app.route("/pages/")
     def pages():
@@ -68,11 +67,12 @@ def make_endpoints(app, back_end=False):
                 comments_inpage[username] = [comment] 
             print(request.method)
             print(pages_comments)            
-            instance.add_comment( pages_comments, page_name,username)
+            instance.add_comment( pages_comments)
             pages_comments = instance.get_commentBucket()
             comments_inpage = pages_comments[page_name] 
             print(page_name)
             return redirect(f"/pages/{page_name}")
+            
         elif request.method == 'GET':  
             pages_comments = instance.get_commentBucket()
             print(request.method)        
