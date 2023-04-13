@@ -13,13 +13,14 @@
           integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
           crossorigin="anonymous"
         />
-        <link rel="stylesheet" href="style.css">
+        <!--Feather Icons-->
+        <script src="https://unpkg.com/feather-icons"></script>
         <!-- TODO(Checkpoint Requirement 3): Change the title and content of your wiki.-->
         {% block title %} {% endblock %}
     </head>
 </head>
 
-<body>
+<body class='text-center'>
     <!-- TODO(Project 1): Implement routes. -->
     <header>
         <nav class="navbar navbar-expand-lg bg-light navbar-light">
@@ -72,11 +73,14 @@
             {%  block content %} {% endblock %}
         </div>
     </main>
-        
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
       crossorigin="anonymous"
     ></script>
+    <script>
+        feather.replace()
+    </script>
 </body>
 </html>
