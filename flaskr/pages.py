@@ -46,7 +46,7 @@ def make_endpoints(app):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>")
+    @app.route("/pages/<page_name>", methods = ["GET", "PUT"])
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
         page_id = instance.get_author(page_name)
@@ -55,8 +55,25 @@ def make_endpoints(app):
                                content=content,
                                page_name=page_name,
                                authored=authorized)
+    
+    @app.route("/pages/<page_name>/edit", methods=["GET", "POST"])
+    def edit_wiki_page(page_name):
+        if request.method == "POST":
+            new_content = request.form.get("new_content")
+            name = request.form.get("page_name")
+            instance.edit_wiki_page(page_name, new_content, name)
+            return redirect(url_for("wiki_page", page_name=page_name))
+        else:
+            if "user" in session:
+                content = instance.get_wiki_page(page_name)
+                # return redirect(url_for("wiki_page", page_name=page_name))
+                return render_template("wikipage.html", page_name=page_name, content=content)
+            else:
+                return redirect(url_for("login"))
 
     @app.route("/delete/page", methods=["GET", "POST"])
+
+    
     def delete():
         page_name = request.form.get('page_name')
         if 'user' not in session:
