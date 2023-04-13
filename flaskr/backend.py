@@ -27,7 +27,8 @@ class Backend:
                  Mock_authors_images=False,
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
-                 Mock_hashlib=False):
+                 Mock_hashlib=False,
+                 Mock_session=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -44,6 +45,7 @@ class Backend:
         ) if Mock_authors_images is False else Mock_authors_images
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
+        self.session = session if Mock_session is False else Mock_session
 
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
@@ -60,19 +62,21 @@ class Backend:
         return blob_names
 
     def upload(self, file, name):
+        print("SESSION", self.session)
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
-        blob.metadata = {'user_id': session.get('user')}
+        blob.metadata = {'user_id': self.session.get('user')}
         blob.upload_from_file(file)
 
     def get_author(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
+                print("INNER", True)
                 return blob.metadata.get('user_id')
 
     def checkUser(self, name, page_id):
-        user_id = session.get('user')
+        user_id = self.session.get('user')
         if user_id == page_id:
             return True
         return False
@@ -80,10 +84,10 @@ class Backend:
     def delete(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
-
             if blob.name == name:
                 cur_page = blob
-                user_id = session.get('user')
+                print("SESSION SELF!!!", self.session)
+                user_id = self.session.get('user')
 
                 if user_id and cur_page.metadata.get('user_id') == user_id:
                     cur_page.delete()
@@ -113,7 +117,7 @@ class Backend:
             passwordIn.encode()).hexdigest()
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower():
-                print(blob.name.lower())
+                # print(blob.name.lower())
                 return blob.download_as_string().decode(
                     'utf-8') == passwordIn_encryption
 
