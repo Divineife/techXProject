@@ -139,10 +139,7 @@ class Test_pages:
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
 
-    # def test_delete_page(self, client):
-    #     with client.session_transaction() as fake_session:
-    #         fake_session["user"] = 'danny'
-    #     server_response = client.post('/delete/testing',
-    #                                   data={"username": "flask"})
-    #     assert server_response.status_code == 200
-    #     assert b"/delete/wiki" in server_response.data
+    @patch.object(Backend, 'delete', return_value=True)
+    def test_delete(self, mock_delete, client):
+        server_response = client.post("/delete/page")
+        assert server_response.status_code == 302
