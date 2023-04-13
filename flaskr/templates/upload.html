@@ -2,7 +2,9 @@
 
 {% block content %} 
 <div>
+    
     <h2>Upload a doc to the wiki</h2>
+    <div id="error-message" style="color: red; font-weight: bold; margin-top: 10px;"></div>
     
     <!-- <form method="POST" action="/upload" enctype="multipart/form-data">    
 
@@ -10,7 +12,7 @@
         <button type="submit">Upload </button>
     </form> -->
 
-    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data">
         <label class="sr-only" for="inlineFormInputName2">wiki name</label>
         <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="wikiname" name="wikiname">
       
@@ -28,10 +30,9 @@
                 {% endfor %}
             </select>
         </div>
-
+      
         <button type="submit" class="btn btn-secondary mb-2">Upload</button>
       </form>
+      <div id="error-message" style="color: red; font-weight: bold; margin-top: 10px;"></div>
 </div>
-    
-
 {% endblock %}

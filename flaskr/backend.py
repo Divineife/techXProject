@@ -107,11 +107,7 @@ class Backend:
         #return map_author_2_image
 
     def get_categories(self):
-        categories = ["TechExchange"
-                     ,"Internships"
-                     ,"Clubs"
-                     ,"Events"
-                     ,"Other"]
+        categories = ["TechExchange", "Internships", "Clubs", "Events", "Other"]
         return categories
 
     def get_page_category(self, name):
