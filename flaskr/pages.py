@@ -77,7 +77,7 @@ def make_endpoints(app, back_end=False):
             valid = instance.sign_in(username, password)
             if valid:
                 session['user'] = username
-                flash("Logged Successful!", 'info')
+                flash("Logged In Successfully!", 'info')
                 return redirect('/')
             else:
                 flash("Incorrect Password or Username, Pleasee Try again!",
