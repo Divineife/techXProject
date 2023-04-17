@@ -38,12 +38,14 @@
         <div class="text-light p-5 text-center">
             <div class="container">
                 <div>
-                    <h1>Welcome to the Wiki!</h1>
+                    <h1><strong>Welcome to the Wiki!</strong></h1>
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for msg in messages %}
-                                <p> {{msg}}</p>
+                                <div class="alert alert-success" role="alert">
+                                    <strong>{{ msg }}</strong>
+                                </div>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
