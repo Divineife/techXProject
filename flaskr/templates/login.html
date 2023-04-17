@@ -1,33 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %} 
-    <style>
-        main{
-            height:70vh;
-            display:flex;
-            flex-direction: column;
-            align-items:center;
-            justify-content: center;
-        }    
-    </style>
+<style>
+    main{
+        height:70vh;
+        display:flex;
+        flex-direction: column;
+        align-items:center;
+        justify-content: center;
+    }    
+</style>
 <main>
-    <div class="conatiner-fluid">
+    <div class="container-fluid">
         <section class="form-signin w-200 m-auto">
             <form method="post">
                 <h1 class='mb-3 fw-normal'>Login</h1>
+
                 <div class="form-floating">
                     <input class='form-control' type="text" name="username" placeholder="Username"  required/>
                     <label for="" class="floatingIpnut">Username</label><br/>
                 </div>
+
                 <div class="form-floating">
                     <input class="form-control" type="password" name="password" placeholder="Password" required/>
                     <label for="" class="floatingInput">Password</label><br/>
                 </div>
+
                 <br/>
                 <input type="submit" value="Login"/>
             </form>
         </section>
     </div>
+
     <div class="container-fluid m-3">
         <section>
             {% with messages = get_flashed_messages() %}
