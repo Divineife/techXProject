@@ -1,5 +1,21 @@
+{% extends "base.html" %}
+
 {% block content %} 
-<h2>Welcome to {{page_name}}</h2>
-<h4>{{content}}</h4>
+
+<section class="bg-primary text-light p-5 text-center">
+    <div class="container">
+        <div>
+            <h1 class="fw-bolder ">{{ page_name }}</h1>
+        </div>
+    </div>
+</section>
+
+<section class="border-dark p-5 text-c">
+    <div class="container border-dark">
+        <h5>{{content}}</h5>
+    </div>
+</section>
+
+
 
 {% endblock %}
