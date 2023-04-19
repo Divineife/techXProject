@@ -2,10 +2,13 @@
 
 {% block content %} 
 <h2>Pages contained in this Wiki</h2>
-{% for category in page_names %} 
-    <h5>{{category}}</h1>
-    {% for page in page_names[category] %}
-        <ul><a href="/pages/{{page}}">{{page}}</ul></a> 
+<div>
+    {% for category in page_names %} 
+        <h5>{{category}}</h1>
+        {% for page in page_names[category] %}
+            <ul><a href="/pages/{{page}}">{{page}}</ul></a> 
+        {% endfor %}
     {% endfor %}
-{% endfor %}
+</div>
+
 {% endblock %}
