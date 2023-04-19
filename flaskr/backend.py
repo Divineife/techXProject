@@ -53,19 +53,17 @@ class Backend:
 
     def get_all_page_names(self):
         categories = self.get_categories()
-        categories_w_pages = {}
+        categories_w_pages_list = {}
         for category in categories:
-            categories_w_pages[category] = []
+            categories_w_pages_list[category] = []
 
         blobs_pages = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs_pages:
             page_name = blob.name
             page_category = blob.metadata.get("category")
-            categories_w_pages[page_category].append(page_name)
+            categories_w_pages_list[page_category].append(page_name)
 
-        print(categories_w_pages)
-
-        return categories_w_pages
+        return categories_w_pages_list
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
