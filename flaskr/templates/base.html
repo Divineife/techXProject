@@ -53,7 +53,8 @@
                             </li>
                         {% elif "user" in session %}
                             <li class="nav-item">
-                                <h4 class="mx-2" >{{ session['user'] }}</h4>
+                                <a class="nav-link" href="#"><strong class="text-primary">{{ session['user'] }}</strong></a>
+                                <!-- <h4 class="mx-2" >{{ session['user'] }}</h4> -->
                             </li>
                             <h4> | </h4>
                             <li class="nav-item">
