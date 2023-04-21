@@ -13,6 +13,11 @@ class Testback_end:
         return list_blobs
 
     @pytest.fixture(scope="class", autouse=True)
+    def get_blob(self):
+        get_blob = MagicMock()
+        return get_blob
+
+    @pytest.fixture(scope="class", autouse=True)
     def bucket(self):
         blob = MagicMock()
         return blob
@@ -247,13 +252,15 @@ class Testback_end:
                               ,"Events"
                               ,"Other"]
 
-    def test_get_page_category(self, blob, storage_client, list_blobs, blobs_list, bucket, read, hashlib, metadata):
-        storage_client.list_blobs.return_value = [self.blob1('Hello Sds', 'Hello Sds', '/file/sds', blob, blobs_list, read, hashlib, metadata, "TechExchange")]
+    def test_get_page_category(self, blob, storage_client, list_blobs, blobs_list, bucket, read, hashlib, metadata, get_blob):
+        storage_client.bucket.return_value = bucket
+        bucket.get_blob.return_value = blob
+        blob.metadata.get.return_value = "TechExchange"
 
         page_category = self.backend(storage_client, 'Sds', False, False,
                      False).get_page_category("Hello Sds")
 
-        storage_client.list_blobs.assert_called_with('Sds')
+        
         assert page_category == "TechExchange"
         assert blob.assert_called_once
         
