@@ -133,7 +133,7 @@ class Testback_end:
                 hashlib, session):
         return Backend(storage_client, wiki_name, authors_images, self.BytesIO,
                        password_name, hashlib, session)
-   
+
     def test_get_wiki_page_fail(self, blob, storage_client, list_blobs,
                                 blobs_list, bucket, read, hashlib, metadata):
         """
@@ -150,9 +150,7 @@ class Testback_end:
         assert blob.name == 'ads_file'
         assert ans == None
         assert blob.assert_called_once
-    
-    
-    
+
     def test_get_all_page(self, blob, storage_client, list_blobs, blobs_list,
                           bucket, read, hashlib, metadata):
         """
@@ -173,7 +171,6 @@ class Testback_end:
         assert blobs_list == [('Sds_file', 'Hello Sds'),
                               ('SdsF_file', 'Hello Sds section f')]
         assert blob.assert_called_once
-    
 
     def test_upload(self, blob, storage_client, list_blobs, blobs_list, bucket,
                     read, hashlib, metadata, session):
@@ -256,20 +253,18 @@ class Testback_end:
         assert blob.delete() == ""
         session.get.assert_called_with('user')
         blob.metadata.get.assert_called_with('user_id')
-    
 
     def test_check_user(self, blob, storage_client, list_blobs, blobs_list,
                         bucket, read, hashlib, metadata, session):
         """
         This is the test for the check_user method in backend.py
-        """ 
+        """
         session.get.return_value = 'dfaleye'
         condition = self.backend(storage_client, 'password', False, 'Passwords',
                                  hashlib,
                                  session).check_user('Sds_file', 'dfaleye')
         session.get.assert_called_with('user')
         assert condition == True
-     
 
     def test_get_author(self, blob, storage_client, list_blobs, blobs_list,
                         bucket, read, hashlib, metadata, session):

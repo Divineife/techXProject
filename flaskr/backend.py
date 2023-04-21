@@ -53,7 +53,7 @@ class Backend:
             if blob.name == name:
                 print('BLOB', blob)
                 return blob.download_as_string().decode('utf-8')
-    
+
     def get_all_page_names(self):
         """
         This method returns the list of blob names in the wiki-page bucket
@@ -70,7 +70,7 @@ class Backend:
         print("BLOB", blob)
         blob.metadata = {'user_id': self.session.get('user')}
         blob.upload_from_file(file)
-    
+
     def get_author(self, name):
         """
         THis method returns the username of the author of a page
@@ -79,7 +79,7 @@ class Backend:
         cur_blob = bucket.get_blob(name)
         if cur_blob:
             return cur_blob.metadata.get('user_id')
-  
+
     def check_user(self, name, page_username):
         """
         THis method returns a boolean that indicates whether or not a user posted a page
@@ -90,7 +90,6 @@ class Backend:
             return True
         return False
 
-    
     def delete(self, name):
         """
         THis method deletes the wikipage.

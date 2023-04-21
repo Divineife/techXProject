@@ -41,7 +41,6 @@ def make_endpoints(app):
             else:
                 return redirect('login')
 
-    
     @app.route("/pages/")
     def pages():
         """
@@ -51,7 +50,6 @@ def make_endpoints(app):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         """
@@ -67,7 +65,6 @@ def make_endpoints(app):
                                page_name=page_name,
                                authored=authorized)
 
-    
     @app.route("/delete/page", methods=["GET", "POST"])
     def delete():
         """
