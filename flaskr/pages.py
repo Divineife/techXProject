@@ -41,23 +41,38 @@ def make_endpoints(app):
             else:
                 return redirect('login')
 
+    
     @app.route("/pages/")
     def pages():
+        """
+        This route is the endpoint to display all pages
+        The list of page names uploaded is passed to the html template
+        """
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
+    
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
+        """
+        This route is the endpoint for each specific page
+        The content of the webpage is passed as content and the pagename is passed as page_name
+        The status of the user i.e if he is the author of the page is passed as the boolean authored
+        """
         content = instance.get_wiki_page(page_name)
-        page_id = instance.get_author(page_name)
-        authorized = instance.checkUser(page_name, page_id)
+        page_username = instance.get_author(page_name)
+        authorized = instance.check_user(page_name, page_username)
         return render_template('wikipage.html',
                                content=content,
                                page_name=page_name,
                                authored=authorized)
 
+    
     @app.route("/delete/page", methods=["GET", "POST"])
     def delete():
+        """
+        This is the endpoint to delete a wiki-page
+        """
         page_name = request.form.get('page_name')
         if 'user' not in session:
             return redirect("login")

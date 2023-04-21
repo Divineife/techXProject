@@ -53,8 +53,11 @@ class Backend:
             if blob.name == name:
                 print('BLOB', blob)
                 return blob.download_as_string().decode('utf-8')
-
+    
     def get_all_page_names(self):
+        """
+        This method returns the list of blob names in the wiki-page bucket
+        """
         blobs = self.storage_client.list_blobs(self.bucket_name)
         blob_names = []
         for blob in blobs:
@@ -62,31 +65,40 @@ class Backend:
         return blob_names
 
     def upload(self, file, name):
-        print("SESSION", self.session)
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
+        print("BLOB", blob)
         blob.metadata = {'user_id': self.session.get('user')}
         blob.upload_from_file(file)
-
+    
     def get_author(self, name):
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        for blob in blobs:
-            if blob.name == name:
-                print("INNER", True)
-                return blob.metadata.get('user_id')
-
-    def checkUser(self, name, page_id):
-        user_id = self.session.get('user')
-        if user_id == page_id:
+        """
+        THis method returns the username of the author of a page
+        """
+        bucket = self.storage_client.bucket(self.bucket_name)
+        cur_blob = bucket.get_blob(name)
+        if cur_blob:
+            return cur_blob.metadata.get('user_id')
+  
+    def check_user(self, name, page_username):
+        """
+        THis method returns a boolean that indicates whether or not a user posted a page
+        """
+        #checks if user is the author of a page
+        username = self.session.get('user')
+        if username == page_username:
             return True
         return False
 
+    
     def delete(self, name):
+        """
+        THis method deletes the wikipage.
+        """
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
                 cur_page = blob
-                print("SESSION SELF!!!", self.session)
                 user_id = self.session.get('user')
 
                 if user_id and cur_page.metadata.get('user_id') == user_id:
@@ -117,7 +129,6 @@ class Backend:
             passwordIn.encode()).hexdigest()
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower():
-                # print(blob.name.lower())
                 return blob.download_as_string().decode(
                     'utf-8') == passwordIn_encryption
 
@@ -126,5 +137,3 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
-        #map_author_2_image[blob.name.lower()] = blob.public_url
-        #return map_author_2_image

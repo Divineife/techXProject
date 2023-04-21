@@ -45,7 +45,7 @@ class Test_pages:
         'get_wiki_page',
         return_value=['hello', 'iterate', 'through', 'this', 'mock_object'])
     @patch.object(Backend, 'get_author', return_value='usrid')
-    @patch.object(Backend, 'checkUser', return_value=True)
+    @patch.object(Backend, 'check_user', return_value=True)
     def test_page_in_pages(self, mock_get_wiki_page, mock_get_author,
                            mock_checkUser, client):
         with client.get('/pages/5') as server_response:
