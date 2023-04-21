@@ -66,7 +66,8 @@ def make_endpoints(app, back_end=False):
         return render_template('wikipage.html',
                                content=content,
                                page_name=page_name,
-                               authored=authorized,page_category=page_category)
+                               authored=authorized,
+                               page_category=page_category)
 
     @app.route("/delete/page", methods=["GET", "POST"])
     def delete():

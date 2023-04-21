@@ -74,7 +74,10 @@ class Backend:
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
-        blob.metadata = {'user_id': self.session.get('user'),{'category': category}}
+        blob.metadata = {
+            'user_id': self.session.get('user'),
+            'category': category
+        }
         blob.upload_from_file(file)
 
     def get_author(self, name):
@@ -145,11 +148,7 @@ class Backend:
 
     def get_categories(self):
         # Returns a list of all the categories that have been pre-determined
-        categories = ["TechExchange"
-                     ,"Internships"
-                     ,"Clubs"
-                     ,"Events"
-                     ,"Other"]
+        categories = ["TechExchange", "Internships", "Clubs", "Events", "Other"]
         return categories
 
     def get_page_category(self, name):

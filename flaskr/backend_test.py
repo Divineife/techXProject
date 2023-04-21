@@ -93,7 +93,7 @@ class Testback_end:
         download_as_string = MagicMock()
         download_as_string.decode.return_value = decode
         return download_as_string
-    
+
     @pytest.fixture(scope="class", autouse=True)
     def get(self):
         get = MagicMock()
@@ -132,8 +132,8 @@ class Testback_end:
         metadata.get.return_value = {'user': 'dfaleye'}
         return metadata
 
-
-    def blob1(self, object_name, contained_script, file, blob, blobs_list, read, hashlib, metadata, metadata_data):
+    def blob1(self, object_name, contained_script, file, blob, blobs_list, read,
+              hashlib, metadata, metadata_data):
         blob.download_as_string.return_value.decode.return_value = contained_script
         blob.name = object_name
         blob.contains = (object_name, contained_script)
@@ -181,15 +181,17 @@ class Testback_end:
             self.blob1('Hello Sds', 'Hello Sds section f', '/file/sds', blob,
                        blobs_list, read, hashlib, metadata, "TechExchange")
         ]
-        pages_list = self.backend(storage_client, 'Sds', False, False,
-                     False, self.session).get_all_page_names()
+        pages_list = self.backend(storage_client, 'Sds', False, False, False,
+                                  self.session).get_all_page_names()
 
         storage_client.list_blobs.assert_called_with('Sds')
-        assert pages_list == {"TechExchange": ['Hello Sds', 'Hello Sds'], 
-                              'Internships': [], 
-                              'Clubs': [], 
-                              'Events': [], 
-                              'Other': []}
+        assert pages_list == {
+            "TechExchange": ['Hello Sds', 'Hello Sds'],
+            'Internships': [],
+            'Clubs': [],
+            'Events': [],
+            'Other': []
+        }
         assert blob.assert_called_once
 
     def test_upload(self, blob, storage_client, list_blobs, blobs_list, bucket,
@@ -198,12 +200,12 @@ class Testback_end:
         storage_client.list_blobs.return_value = self.blob1(
             'Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list, read,
             hashlib, metadata, {'user': 'dfaleye'})
-            
+
         session.get.return_value = 'dfaleye'
         bucket.blob.return_value = ['Sds_file']
 
         self.backend(storage_client, 'Sds', False, False, False,
-                     session).upload('/file/sds', 'Sds_file')
+                     session).upload('/file/sds', 'Sds_file', "other")
 
         # storage_client.list_blobs.assert_called_with('Sds')
         session.get.assert_called_with('user')
@@ -314,23 +316,24 @@ class Testback_end:
         assert ans == 'Hello Ads'
         assert blob.assert_called_once
 
-    def test_get_categories(self, blob, storage_client, list_blobs, blobs_list,bucket, read, hashlib, metadata):
-        categories = self.backend(storage_client, False, False, False, False).get_categories()
+    def test_get_categories(self, blob, storage_client, list_blobs, blobs_list,
+                            bucket, read, hashlib, metadata):
+        categories = self.backend(storage_client, False, False, False, False,
+                                  False).get_categories()
 
-        assert categories == ["TechExchange"
-                              ,"Internships"
-                              ,"Clubs"
-                              ,"Events"
-                              ,"Other"]
+        assert categories == [
+            "TechExchange", "Internships", "Clubs", "Events", "Other"
+        ]
 
-    def test_get_page_category(self, blob, storage_client, list_blobs, blobs_list, bucket, read, hashlib, metadata, get_blob):
+    def test_get_page_category(self, blob, storage_client, list_blobs,
+                               blobs_list, bucket, read, hashlib, metadata,
+                               get_blob):
         storage_client.bucket.return_value = bucket
         bucket.get_blob.return_value = blob
         blob.metadata.get.return_value = "TechExchange"
 
-        page_category = self.backend(storage_client, 'Sds', False, False,
-                     False).get_page_category("Hello Sds")
+        page_category = self.backend(storage_client, 'Sds', False, False, False,
+                                     False).get_page_category("Hello Sds")
 
-        
         assert page_category == "TechExchange"
         assert blob.assert_called_once
