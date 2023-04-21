@@ -94,18 +94,6 @@ class Testback_end:
         download_as_string.decode.return_value = decode
         return download_as_string
 
-    @pytest.fixture(scope="class", autouse=True)
-    def get(self):
-        get = MagicMock()
-        get.return_value = "TechExchange"
-        return get
-
-    @pytest.fixture(scope='class', autouse=True)
-    def metadata(self, get):
-        metadata = MagicMock()
-        metadata.get.return_value = "TechExchange"
-        return metadata
-
     def BytesIO(self, contain_script_bytes):
         BytesIO = MagicMock()
         BytesIO.return_value = contain_script_bytes
@@ -181,6 +169,7 @@ class Testback_end:
             self.blob1('Hello Sds', 'Hello Sds section f', '/file/sds', blob,
                        blobs_list, read, hashlib, metadata, "TechExchange")
         ]
+
         pages_list = self.backend(storage_client, 'Sds', False, False, False,
                                   self.session).get_all_page_names()
 
@@ -331,7 +320,6 @@ class Testback_end:
         storage_client.bucket.return_value = bucket
         bucket.get_blob.return_value = blob
         blob.metadata.get.return_value = "TechExchange"
-
         page_category = self.backend(storage_client, 'Sds', False, False, False,
                                      False).get_page_category("Hello Sds")
 
