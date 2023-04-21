@@ -32,11 +32,13 @@ def make_endpoints(app, back_end=False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            instance.upload(file, name)
+            category = request.form['category']
+            instance.upload(file, name, category)
             return "File uploaded successfully"
         else:
             if 'user' in session:
-                return render_template("upload.html")
+                categories = instance.get_categories()
+                return render_template("upload.html", categories=categories)
             else:
                 return redirect('login')
 
@@ -48,9 +50,11 @@ def make_endpoints(app, back_end=False):
     @app.route("/pages/<page_name>")
     def wiki_page(page_name):
         content = instance.get_wiki_page(page_name)
+        page_category = instance.get_page_category(page_name)
         return render_template('wikipage.html',
                                content=content,
-                               page_name=page_name)
+                               page_name=page_name,
+                               page_category=page_category)
 
     @app.route("/about")
     def about_page():
