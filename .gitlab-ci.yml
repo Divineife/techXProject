@@ -1,20 +1,30 @@
 image: python:3
 
 lint:
- stage: build
+ stage: test
  script:
   - pip install yapf==0.32.0
-  - yapf --recursive --diff --style google .
+  - yapf --style google -i --recursive .
  only:
-  - pushes
+  - merge_requests
 
 unittest:
  stage: test
- dependencies:
-  - lint
  script:
   - pip install -r requirements.txt
   - pytest flaskr/backend_test.py
   - pytest flaskr/pages_test.py
  only:
-  - pushes
+  - merge_requests
+
+prod:
+ image: google/cloud-sdk:alpine
+ stage: deploy
+ environment: Production
+ only:
+  - main
+ script:
+  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  - gcloud --quiet --project wiki-viewer-1 app deploy
+  

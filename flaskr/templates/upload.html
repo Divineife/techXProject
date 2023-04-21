@@ -3,20 +3,28 @@
 {% block content %} 
 <div>
     <h2>Upload a doc to the wiki</h2>
-    
-    <div id="form-container">
-        <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data" onsubmit="return validateForm()">
-            <label class="sr-only" for="inlineFormInputName2">wiki name</label>
-            <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="wikiname" name="wikiname">
-          
-            <label class="sr-only" for="inlineFormInputGroupUsername2">File</label>
-            <div class="input-group mb-2 mr-sm-2">
-                <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
-            </div>
-          
-            <button type="submit" class="btn btn-secondary mb-2">Upload</button>
-        </form>
-    </div>
+
+    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <label class="sr-only" for="inlineFormInputName2">wiki name</label>
+        <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="wikiname" name="wikiname">
+      
+        <label class="sr-only" for="inlineFormInputGroupUsername2">File</label>
+        <div class="input-group mb-2 mr-sm-2">
+            <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file">
+        </div>
+      
+        <label class="sr-only" for="inlineFormInputCategorie">Categories</label>
+        <div class="mb-2 mr-sm-2">
+            <h4>Choose the Category your file falls under:</h4>
+            <select name="category">
+                {% for category in categories %}
+                    <option name="category" value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-secondary mb-2">Upload</button>
+      </form>
 </div>
     
 

@@ -46,8 +46,9 @@ class Test_pages:
         return_value=['hello', 'iterate', 'through', 'this', 'mock_object'])
     @patch.object(Backend, 'get_author', return_value='usrid')
     @patch.object(Backend, 'check_user', return_value=True)
+    @patch.object(Backend, 'get_page_category', return_value="TechExchange")
     def test_page_in_pages(self, mock_get_wiki_page, mock_get_author,
-                           mock_checkUser, client):
+                           mock_checkUser, mock_get_page_category, client):
         with client.get('/pages/5') as server_response:
             assert server_response.status_code == 200
         assert b'Welcome to' in server_response.data
@@ -128,6 +129,7 @@ class Test_pages:
         server_response = client.get('/login')
         assert server_response.status_code == 302
         assert b'"/"' in server_response.data
+
 
     def test_signup_page_get_loggedin(self, client):
         server_response = client.get('/signup')

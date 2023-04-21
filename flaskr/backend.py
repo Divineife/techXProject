@@ -55,20 +55,26 @@ class Backend:
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        """
-        This method returns the list of blob names in the wiki-page bucket
-        """
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        blob_names = []
-        for blob in blobs:
-            blob_names.append(blob)
-        return blob_names
+        # This method will return a dictionary with the category as the keys and the name of the pages as the values. Any page with no category inside their metadata will be put in the "Other" category.
+        categories = self.get_categories()
+        categories_w_pages = {}
+        for category in categories:
+            categories_w_pages[category] = []
 
-    def upload(self, file, name):
+        blobs_pages = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs_pages:
+            page_name = blob.name
+            page_category = blob.metadata.get("category")
+            if page_category is None:
+                page_category = "Other"
+            categories_w_pages[page_category].append(page_name)
+
+        return categories_w_pages
+
+    def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
-        print("BLOB", blob)
-        blob.metadata = {'user_id': self.session.get('user')}
+        blob.metadata = {'user_id': self.session.get('user'),{'category': category}}
         blob.upload_from_file(file)
 
     def get_author(self, name):
@@ -136,3 +142,23 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
+
+    def get_categories(self):
+        # Returns a list of all the categories that have been pre-determined
+        categories = ["TechExchange"
+                     ,"Internships"
+                     ,"Clubs"
+                     ,"Events"
+                     ,"Other"]
+        return categories
+
+    def get_page_category(self, name):
+        # Receives the name of a page then checks the pages metadata and returns the category assigned inside the metadata or "Other" if metadata is missing.
+        bucket = self.storage_client.bucket(self.bucket_name)
+        blob = bucket.get_blob(name)
+        if blob is not None:
+            cur_page_category = blob.metadata.get("category")
+            if cur_page_category == None:
+                return "Other"
+            else:
+                return cur_page_category
