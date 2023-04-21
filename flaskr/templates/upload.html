@@ -3,14 +3,8 @@
 {% block content %} 
 <div>
     <h2>Upload a doc to the wiki</h2>
-    
-    <!-- <form method="POST" action="/upload" enctype="multipart/form-data">    
 
-        <input type="file" name="file">
-        <button type="submit">Upload </button>
-    </form> -->
-
-    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data">
+    <form class="form-inline" method="POST" action="/upload" enctype="multipart/form-data" onsubmit="return validateForm()">
         <label class="sr-only" for="inlineFormInputName2">wiki name</label>
         <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="wikiname" name="wikiname">
       
