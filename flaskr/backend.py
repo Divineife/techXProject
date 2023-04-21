@@ -53,17 +53,19 @@ class Backend:
 
     def get_all_page_names(self):
         categories = self.get_categories()
-        categories_w_pages_list = {}
+        categories_w_pages = {}
         for category in categories:
-            categories_w_pages_list[category] = []
+            categories_w_pages[category] = []
 
         blobs_pages = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs_pages:
             page_name = blob.name
             page_category = blob.metadata.get("category")
-            categories_w_pages_list[page_category].append(page_name)
+            if page_category is None:
+                page_category = "Other"
+            categories_w_pages[page_category].append(page_name)
 
-        return categories_w_pages_list
+        return categories_w_pages
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
@@ -113,7 +115,11 @@ class Backend:
         return categories
 
     def get_page_category(self, name):
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        for blob in blobs:
-            if blob.name == name:
-                return blob.metadata.get("category")
+        bucket = self.storage_client.bucket(self.bucket_name)
+        blob = bucket.get_blob(name)
+        if blob is not None:
+            cur_page_category = blob.metadata.get("category")
+            if cur_page_category == None:
+                return "Other"
+            else:
+                return cur_page_category
