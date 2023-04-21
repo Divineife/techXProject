@@ -3,7 +3,7 @@ from google.cloud import storage
 import pathlib
 import os
 from io import BytesIO
-from flask import request
+from flask import request, session
 import hashlib
 import json
 """The backend to connect to the Google Cloud to upload and read information
@@ -29,7 +29,9 @@ class Backend:
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
+
                  Mock_comment_bucket= False):
+                 Mock_session=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -46,6 +48,7 @@ class Backend:
         ) if Mock_authors_images is False else Mock_authors_images
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
+        self.session = session if Mock_session is False else Mock_session
 
         self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')
         self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
@@ -54,19 +57,70 @@ class Backend:
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
             if blob.name == name:
+                print('BLOB', blob)
                 return blob.download_as_string().decode('utf-8')
 
     def get_all_page_names(self):
-        blobs = self.storage_client.list_blobs(self.bucket_name)
-        blob_names = []
-        for blob in blobs:
-            blob_names.append(blob)
-        return blob_names
+        # This method will return a dictionary with the category as the keys and the name of the pages as the values. Any page with no category inside their metadata will be put in the "Other" category.
+        categories = self.get_categories()
+        categories_w_pages = {}
+        for category in categories:
+            categories_w_pages[category] = []
 
-    def upload(self, file, name):
+        blobs_pages = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs_pages:
+            page_name = blob.name
+            page_category = blob.metadata.get("category")
+            if page_category is None:
+                page_category = "Other"
+            categories_w_pages[page_category].append(page_name)
+
+        return categories_w_pages
+
+    def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
+        blob.metadata = {
+            'user_id': self.session.get('user'),
+            'category': category
+        }
         blob.upload_from_file(file)
+
+    def get_author(self, name):
+        """
+        THis method returns the username of the author of a page
+        """
+        bucket = self.storage_client.bucket(self.bucket_name)
+        cur_blob = bucket.get_blob(name)
+        if cur_blob:
+            return cur_blob.metadata.get('user_id')
+
+    def check_user(self, name, page_username):
+        """
+        THis method returns a boolean that indicates whether or not a user posted a page
+        """
+        #checks if user is the author of a page
+        username = self.session.get('user')
+        if username == page_username:
+            return True
+        return False
+
+    def delete(self, name):
+        """
+        THis method deletes the wikipage.
+        """
+        blobs = self.storage_client.list_blobs(self.bucket_name)
+        for blob in blobs:
+            if blob.name == name:
+                cur_page = blob
+                user_id = self.session.get('user')
+
+                if user_id and cur_page.metadata.get('user_id') == user_id:
+                    cur_page.delete()
+                    return True
+                else:
+                    return False
+        return False
 
     def sign_up(self, usernameIn, passwordIn):
         # Check if username is already being used
@@ -89,7 +143,6 @@ class Backend:
             passwordIn.encode()).hexdigest()
         for blob in blobs:
             if blob.name.lower() == usernameIn.lower():
-                print(blob.name.lower())
                 return blob.download_as_string().decode(
                     'utf-8') == passwordIn_encryption
 
@@ -98,9 +151,6 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
-        #map_author_2_image[blob.name.lower()] = blob.public_url
-        #return map_author_2_image
-
     
     def checkPage_in_commentbucket(self):
         blobs = self.storage_client.list_blobs(self.comment_bucket)
@@ -109,16 +159,29 @@ class Backend:
                 return blob.download_as_string()
         return False
 
-
     def add_comment(self, page_comments, page_name,user_name):
         blob = self.wiki_users_comments.blob(self.json_comments)
         #with blob.open("w") as write_file:
         wiki_pages = json.loads(blob.download_as_string())
-
         page = wiki_pages[page_name]
         page[user_name].append(page_comments)
         blob.upload_from_string(page_comments, content_type='application/json')
 
     def get_comment(self, post):
         pass
-        
+
+    def get_categories(self):
+        # Returns a list of all the categories that have been pre-determined
+        categories = ["TechExchange", "Internships", "Clubs", "Events", "Other"]
+        return categories
+
+    def get_page_category(self, name):
+        # Receives the name of a page then checks the pages metadata and returns the category assigned inside the metadata or "Other" if metadata is missing.
+        bucket = self.storage_client.bucket(self.bucket_name)
+        blob = bucket.get_blob(name)
+        if blob is not None:
+            cur_page_category = blob.metadata.get("category")
+            if cur_page_category == None:
+                return "Other"
+            else:
+                return cur_page_category
