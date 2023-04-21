@@ -12,6 +12,7 @@ Typical usage example:
   return render_template('main.html')
   if logged in: return_template('upload.html')
   return redirect('login')
+  
 """
 
 
@@ -33,8 +34,9 @@ def make_endpoints(app, back_end=False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            instance.upload(file, name)
-            return "File uploaded successfully"
+            category = request.form['category']
+            instance.upload(file, name, category)
+            return redirect('pages')
         else:
             if 'user' in session:
                 return render_template("upload.html")
@@ -44,36 +46,41 @@ def make_endpoints(app, back_end=False):
 
     @app.route("/pages/")
     def pages():
+        """
+        This route is the endpoint to display all pages
+        The list of page names uploaded is passed to the html template
+        """
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
     @app.route("/pages/<page_name>", methods= ['GET', 'POST'])
     def wiki_page(page_name):
+        """
+        This route is the endpoint for each specific page
+        The content of the webpage is passed as content and the pagename is passed as page_name
+        The status of the user i.e if he is the author of the page is passed as the boolean authored
+        """
         content = instance.get_wiki_page(page_name)
-        #comments = instance.get_comments()
         if request.method == 'POST':
             username = session['user']
             #this is a json object 
-            pages_comments = instance.get_commentBucket()
+            pages_comments = instance.get_commentbucket()
             comment = request.form.get('user_comment')
             if page_name not in pages_comments:
                 pages_comments[page_name] = {username: [comment]}
             elif username in pages_comments[page_name]:
                 comments_inpage = pages_comments[page_name] 
                 comments_inpage[username].append(comment)
-                #page_comment= json.dumps(comment)
             else:
                 comments_inpage = pages_comments[page_name] 
-                comments_inpage[username] = [comment] 
-            print(request.method)
-            print(pages_comments)            
-            instance.add_comment( pages_comments)
-            pages_comments = instance.get_commentBucket()
-            comments_inpage = pages_comments[page_name] 
-            print(page_name)
+                comments_inpage[username] = [comment]          
+            instance.add_comment( pages_comments) 
             return redirect(f"/pages/{page_name}")
             
-        elif request.method == 'GET':  
+        elif request.method == 'GET':
+            page_username = instance.get_author(page_name)
+            authorized = instance.check_user(page_name, page_username)
+            page_category = instance.get_page_category(page_name)
             pages_comments = instance.get_commentBucket()
             print(request.method)        
             if page_name not in pages_comments:
@@ -81,8 +88,21 @@ def make_endpoints(app, back_end=False):
             comments_inpage = pages_comments[page_name] 
             return render_template('wikipage.html',
                                 content=content,
-                                page_name=page_name, comments_inpage=comments_inpage )
-     
+                                page_name=page_name, authored=authorized, page_category=page_category,comments_inpage=comments_inpage )
+
+    @app.route("/delete/page", methods=["GET", "POST"])
+    def delete():
+        """
+        This is the endpoint to delete a wiki-page
+        """
+        page_name = request.form.get('page_name')
+        if 'user' not in session:
+            return redirect("login")
+        else:
+            if instance.delete(page_name):
+                return redirect("/pages/")
+            else:
+                flash("You are not authorized to delete this page")
 
     @app.route("/about")
     def about_page():

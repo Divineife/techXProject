@@ -1,6 +1,30 @@
-{% block content %}
-    <h2> Welcome to {{page_name}}</h2>
+{% extends "base.html" %}
+{% block content %} 
+
+<div>
+    <h2>Welcome to {{page_name}}</h2>
+    <h4>Category: {{ page_category }}</h4>
     <h4>{{content}}</h4>
+    {% if authored %}
+
+
+    {% endif %}
+    
+    <div id="id01" class="modal">
+    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
+    <form class="modal-content" action="/delete/page" method="POST">
+        <div class="container">
+        <h1>Delete Wiki Page</h1>
+        <p>Are you sure you want to delete your page?</p>
+        <input type="hidden" name="page_name" value="{{ page_name }}">
+        <div class="clearfix">
+            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            <button type="submit" onclick="document.getElementById('id01').style.display='none'" class="deletebtn">Delete</button>
+        </div>
+        </div>
+    </form>
+    </div>
+
     {% if "user" in session %}
         <form method="POST" action='/pages/{{ page_name }}'>
             <input type='text' name='user_comment' id="text" placeholder="Enter your comment here!" />
@@ -15,8 +39,6 @@
         {% endfor %}
         </div> 
     {% endfor %}
+</div>
 {% endblock %}
-
-
-
 
