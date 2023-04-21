@@ -51,6 +51,8 @@ class Backend:
             if blob.name == name:
                 return blob.download_as_string().decode('utf-8')
 
+
+    # This method will return a dictionary with the category as the keys and the name of the pages as the values. Any page with no category inside their metadata will be put in the "Other" category.
     def get_all_page_names(self):
         categories = self.get_categories()
         categories_w_pages = {}
@@ -106,6 +108,7 @@ class Backend:
         #map_author_2_image[blob.name.lower()] = blob.public_url
         #return map_author_2_image
 
+    # Returns a list of all the categories that have been pre-determined
     def get_categories(self):
         categories = ["TechExchange"
                      ,"Internships"
@@ -114,6 +117,7 @@ class Backend:
                      ,"Other"]
         return categories
 
+    # Receives the name of a page then checks the pages metadata and returns the category assigned inside the metadata or "Other" if metadata is missing.
     def get_page_category(self, name):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.get_blob(name)
