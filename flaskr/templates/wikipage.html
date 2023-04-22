@@ -9,6 +9,12 @@
 
 
     {% endif %}
+    {% if "user" in session %}
+    <form method="POST" action='/pages/{{page_name}}'>
+        <input type='text' name='user_comment' id="text" placeholder="Enter your comment here!" />
+        <button type= "submit" >Comment</button>
+    </form>
+    {% endif %}
     
     <div id="id01" class="modal">
     <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
@@ -25,6 +31,4 @@
     </form>
     </div>
 </div>
-
-
 {% endblock %}

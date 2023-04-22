@@ -47,7 +47,6 @@ class Test_pages:
     @patch.object(Backend, 'get_author', return_value='usrid')
     @patch.object(Backend, 'check_user', return_value=True)
     @patch.object(Backend, 'get_page_category', return_value="TechExchange")
-
     def test_page_in_pages(self, mock_get_wiki_page, mock_get_author,
                            mock_checkUser, mock_get_page_category, client):
         with client.get('/pages/5') as server_response:
