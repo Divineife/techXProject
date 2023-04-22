@@ -39,7 +39,8 @@ class Test_pages:
     def test_pages_page(self, mock_get_all_page_names, client):
         with client.get('/pages/') as server_response:
             assert server_response.status_code == 200
-        
+        assert b'Pages contained in this Wiki' in server_response.data
+
     @patch.object(
         Backend,
         'get_wiki_page',

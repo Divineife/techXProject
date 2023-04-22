@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, redirect, session, flash, url
 import os
 from flaskr.backend import Backend
 global set_app
-import json
 """This will route us to the desired location that the user chooses
 
 In most pages a user will have a navbar where they will have specific options where they can go on the page if they are logged in or not. It will also call methods in the Backend to be able to verify information that the user has provided to either login or signup.
