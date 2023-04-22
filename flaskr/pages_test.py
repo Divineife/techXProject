@@ -1,4 +1,5 @@
 from flaskr import create_app
+from flask import session
 from flaskr.pages import make_endpoints
 import unittest
 from unittest.mock import MagicMock
@@ -47,11 +48,13 @@ class Test_pages:
     @patch.object(Backend, 'get_author', return_value='usrid')
     @patch.object(Backend, 'check_user', return_value=True)
     @patch.object(Backend, 'get_page_category', return_value="TechExchange")
+    @patch.object(Backend, 'get_commentbucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
     def test_page_in_pages(self, mock_get_wiki_page, mock_get_author,
-                           mock_checkUser, mock_get_page_category, client):
+                           mock_checkUser, mock_get_page_category, mock_get_commentbucket, client):
         with client.get('/pages/5') as server_response:
             assert server_response.status_code == 200
         assert b'Welcome to' in server_response.data
+    
 
     def test_about_page(self, client):
         with client.get('/about') as server_response:
@@ -139,6 +142,16 @@ class Test_pages:
         server_response = client.get('/logout')
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
+    
+    @patch.object(Backend, 'get_commentbucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
+    @patch.object(Backend, 'add_comment', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
+    @patch.object(Backend, 'get_wiki_page', return_value = ['hello', 'iterate', 'through', 'this', 'mock_object'])
+    def test_page_inPages_POST(self,mock_get_commentbucket, mock_add_comment,mock_get_wiki_page,client):
+        with client.session_transaction() as fake_session:
+            fake_session["user"] = 'danny'         
+        server_response = client.post('/pages/ADS') 
+        assert server_response.status_code == 302
+        assert b'ADS' in server_response.data
 
     @patch.object(Backend, 'delete', return_value=True)
     def test_delete(self, mock_delete, client):

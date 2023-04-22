@@ -3,9 +3,10 @@ from google.cloud import storage
 import pathlib
 import os
 from io import BytesIO
-from flask import request, session
+from flask import request
 import hashlib
 import json
+from flask import session
 """The backend to connect to the Google Cloud to upload and read information
 
 The pages.py will call functions inside this Backend class to be able to verify or get information that the user prompted. The Backend talks to our google bucket that will read or upload from certain files that we specified. It will also check to verify user inputs are valid when given.
@@ -30,7 +31,9 @@ class Backend:
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
                  Mock_session=False,
-                 Mock_comment_bucket=False):
+                 Mock_comment_bucket= False,
+                 Mock_json_comments= False,
+                 Mock_json = False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -49,13 +52,14 @@ class Backend:
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
         self.session = session if Mock_session is False else Mock_session
 
-        self.wiki_users_comments = self.storage_client.bucket(
-            'wiki_users_comments')
-        self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
-        self.json_comments = 'Comments'
-
+        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')  if Mock_comment_bucket is False else Mock_comment_bucket
+        self.comment_bucket = 'wiki_users_comments'
+        self.json_comments = 'Comments' if Mock_json_comments is False else Mock_json_comments
+        self.json = json if Mock_json is False else Mock_json
+    
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
+        print('Code runs here', blobs)
         for blob in blobs:
             if blob.name == name:
                 print('BLOB', blob)
@@ -77,6 +81,7 @@ class Backend:
             categories_w_pages[page_category].append(page_name)
 
         return categories_w_pages
+
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
@@ -152,25 +157,22 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
+    
+    def get_commentbucket(self):
+        '''this will go in the comment bucket and access the comments for all the pages in json format'''  
+        print(self.wiki_users_comments)
+        blob = self.wiki_users_comments.get_blob(self.json_comments)
+        if blob.content_type != "application/json":
+            return {}
+        wiki_pages = self.json.loads(blob.download_as_string())
+        return wiki_pages      
 
-    def checkPage_in_commentbucket(self):
-        blobs = self.storage_client.list_blobs(self.comment_bucket)
-        for blob in blobs:
-            if blob.name == self.json_comments:
-                return blob.download_as_string()
-        return False
+    def add_comment(self, page_comments):
+        '''this adds the new comment from a page into our bucket using json format '''
+        blob = self.wiki_users_comments.get_blob(self.json_comments)
 
-    def add_comment(self, page_comments, page_name, user_name):
-        blob = self.wiki_users_comments.blob(self.json_comments)
-        #with blob.open("w") as write_file:
-        wiki_pages = json.loads(blob.download_as_string())
-        page = wiki_pages[page_name]
-        page[user_name].append(page_comments)
-        blob.upload_from_string(page_comments, content_type='application/json')
-
-    def get_comment(self, post):
-        pass
-
+        return blob.upload_from_string(self.json.dumps(page_comments), content_type='application/json')
+       
     def get_categories(self):
         # Returns a list of all the categories that have been pre-determined
         categories = ["TechExchange", "Internships", "Clubs", "Events", "Other"]
@@ -186,3 +188,4 @@ class Backend:
                 return "Other"
             else:
                 return cur_page_category
+

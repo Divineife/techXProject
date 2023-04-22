@@ -8,19 +8,9 @@ class Testback_end:
     'This includes test to make sure all of the methods inside of our backend are given the correct outputs without using and dependencies'
 
     @pytest.fixture(scope="class", autouse=True)
-    def get_blob(self):
-        get_blob = MagicMock()
-        return get_blob
-
-    @pytest.fixture(scope="class", autouse=True)
     def list_blobs(self):
         list_blobs = MagicMock()
         return list_blobs
-
-    @pytest.fixture(scope="class", autouse=True)
-    def get_blob(self):
-        get_blob = MagicMock()
-        return get_blob
 
     @pytest.fixture(scope="class", autouse=True)
     def bucket(self):
@@ -33,7 +23,24 @@ class Testback_end:
         storage_client.list_blobs.return_value = list_blobs
         storage_client.bucket = bucket
         return storage_client
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def get_blob(self):
+        get_blob = MagicMock()
+        return get_blob
 
+    @pytest.fixture(scope="class", autouse=True)
+    def wiki_users_comments(self,get_blob):
+        wiki_users_comments = MagicMock()
+        wiki_users_comments.get_blob.return_value = get_blob
+        return wiki_users_comments
+    
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def json(self,get_blob):
+        json = MagicMock()
+        return json
+        
     @pytest.fixture(scope="class", autouse=True)
     def passwordIn(self):
         passwordIn = MagicMock()
@@ -104,41 +111,38 @@ class Testback_end:
         return []
 
     @pytest.fixture(scope="class", autouse=True)
-    def get(self):
-        get = MagicMock()
-        get.return_value = 'dfaleye'
-        return get
-
-    @pytest.fixture(scope="class", autouse=True)
     def session(self):
         session = MagicMock()
         return session
-
+    
     @pytest.fixture(scope="class", autouse=True)
     def metadata(self):
         metadata = MagicMock()
         metadata.get.return_value = {'user': 'dfaleye'}
         return metadata
-
+   
     def blob1(self, object_name, contained_script, file, blob, blobs_list, read,
-              hashlib, metadata, metadata_data):
-        blob.download_as_string.return_value.decode.return_value = contained_script
+              hashlib, metadata, metadata_data, content_type=False):
+        if type(blob.download_as_string()) != str:
+            blob.download_as_string.return_value.decode.return_value = contained_script
         blob.name = object_name
+        if content_type is not False: blob.content_type = content_type
         blob.contains = (object_name, contained_script)
         blobs_list.append(blob.contains)
         blob.upload_from_file = file
-        blob.metadata.get.return_value = metadata_data
-        blob.delete.return_value = contained_script.replace(
-            contained_script, "")
+        blob.delete.return_value = contained_script.replace(contained_script, "")        
+        blob.upload_from_string.return_value = contained_script
         blob.read.return_value = contained_script
         hashlib.blake2b.return_value.hexdigest.return_value = contained_script
         blob.metadata = metadata
+        blob.metadata.get.return_value = metadata_data
         return blob
 
     def backend(self, storage_client, wiki_name, authors_images, password_name,
-                hashlib, session):
+                hashlib, session ,comment_bucket = True, json_comments = True,json=False):
         return Backend(storage_client, wiki_name, authors_images, self.BytesIO,
-                       password_name, hashlib, session)
+                       password_name, hashlib, session,comment_bucket, json_comments,json)
+
 
     def test_get_wiki_page_fail(self, blob, storage_client, list_blobs,
                                 blobs_list, bucket, read, hashlib, metadata):
@@ -196,7 +200,6 @@ class Testback_end:
         self.backend(storage_client, 'Sds', False, False, False,
                      session).upload('/file/sds', 'Sds_file', "other")
 
-        # storage_client.list_blobs.assert_called_with('Sds')
         session.get.assert_called_with('user')
         assert blob.upload_from_file == '/file/sds'
         assert blob.name == 'Sds_file'
@@ -214,7 +217,7 @@ class Testback_end:
         self.backend(storage_client, 'Pds', authors_images, False, False,
                      self.session).get_image('Sds_file')
 
-        storage_client.list_blobs.assert_called_with('Sds')
+        authors_images.blob.assert_called_with('sds_file')
         blob.open.assert_called_with('rb')
         assert f.read() == 'Hello Sds'
         assert blob.upload_from_file == '/file/sds'
@@ -248,6 +251,7 @@ class Testback_end:
         assert blob.upload_from_file == '/file/password'
         assert blob.name == 'username_file'
         assert blob.assert_called_once
+
 
     def test_delete(self, blob, storage_client, list_blobs, blobs_list, bucket,
                     read, hashlib, metadata, session):
@@ -287,7 +291,6 @@ class Testback_end:
 
         self.backend(storage_client, 'password', False, 'Passwords', hashlib,
                      session).get_author('Sds_file')
-
         blob.metadata.get.assert_called_with('user_id')
 
     def test_get_wiki_page(self, blob, storage_client, list_blobs, blobs_list,
@@ -325,3 +328,44 @@ class Testback_end:
 
         assert page_category == "TechExchange"
         assert blob.assert_called_once
+
+    
+    def test_get_commentbucket(self, blob, storage_client, list_blobs, blobs_list, bucket, read,hashlib, metadata, wiki_users_comments, authors_images, json,session):
+        wiki_users_comments.get_blob.return_value = self.blob1('Sds_file', str({'ADS':{'A':['First ever comment']}}),
+                                                      '/file/sds', blob,
+                                                      blobs_list, read, hashlib, metadata,
+                                                      "TechExchange", "application/json")
+        json.loads.return_value = {'ADS':{'A':['First ever comment']}}
+        blob.download_as_string.return_value = str({'ADS':{'A':['First ever comment']}})
+        json_object = self.backend(storage_client, 'Pds', authors_images, False,
+                     False,session,wiki_users_comments, 'Mock_Comments',json).get_commentbucket()
+        
+        wiki_users_comments.get_blob.assert_called_with('Mock_Comments')
+        json.loads.assert_called_with(str({'ADS':{'A':['First ever comment']}}))
+        assert json_object == {'ADS':{'A':['First ever comment']}}
+    
+    def test_get_commentbucket_Notjson(self, blob, storage_client, list_blobs, blobs_list, bucket, read,hashlib, metadata, wiki_users_comments, authors_images, json, session):
+        wiki_users_comments.get_blob.return_value = self.blob1('Sds_file', str({'ADS':{'A':['First ever comment']}}),
+                                                      '/file/sds', blob,
+                                                      blobs_list, read, hashlib, metadata,
+                                                      "TechExchange", "application")
+        json.loads.return_value = {'ADS':{'A':['First ever comment']}}
+        json_object = self.backend(storage_client, 'Pds', authors_images, False,
+                     False, session,wiki_users_comments, 'Mock_Comments',json).get_commentbucket()
+        
+        wiki_users_comments.get_blob.assert_called_with('Mock_Comments')
+        assert json_object == {}
+
+    def test_add_comment(self, blob, storage_client, list_blobs, blobs_list, bucket, read,hashlib, metadata, wiki_users_comments, authors_images, json, session):
+        wiki_users_comments.get_blob.return_value = self.blob1('Sds_file', str({'ADS':{'A':['First ever comment']}}),
+                                                      '/file/sds', blob,
+                                                      blobs_list, read, hashlib, metadata,
+                                                      "TechExchange", "application")
+        json.dumps.return_value = str({'ADS':{'A':['First ever comment']}})
+        json_object = self.backend(storage_client, 'Pds', authors_images, False,
+                     False, session, wiki_users_comments, 'Mock_Comments',json).add_comment({'ADS':{'A':['First ever comment']}})
+        
+        wiki_users_comments.get_blob.assert_called_with('Mock_Comments')
+        assert json_object == str({'ADS':{'A':['First ever comment']}})
+        json.dumps.assert_called_with({'ADS':{'A':['First ever comment']}})
+        blob.upload_from_string.assert_called_with( str({'ADS':{'A':['First ever comment']}}), content_type = 'application/json')
