@@ -6,8 +6,7 @@
     <h4>Category: {{ page_category }}</h4>
     <h4>{{content}}</h4>
     {% if authored %}
-
-
+    <button class = "center" onclick="document.getElementById('id01').style.display='block'">Delete</button>
     {% endif %}
     {% if "user" in session %}
     <form method="POST" action='/pages/{{page_name}}'>
