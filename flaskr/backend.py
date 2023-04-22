@@ -32,8 +32,8 @@ class Backend:
                  Mock_comment_bucket=False,
                  Mock_session=False):
 
-        self.storage_client = storage.Client() 
-        if Mock_storage_client is False else Mock_storage_client
+        self.storage_client = storage.Client(
+        ) if Mock_storage_client is False else Mock_storage_client
 
         self.wiki_view = self.storage_client.bucket('wiki_view')
         self.bucket_name = 'wikis_viewer' if Mock_bucket_name is False else Mock_bucket_name
