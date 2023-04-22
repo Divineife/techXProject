@@ -114,8 +114,13 @@ class Testback_end:
     def session(self):
         session = MagicMock()
         return session
-
     
+    @pytest.fixture(scope="class", autouse=True)
+    def metadata(self):
+        metadata = MagicMock()
+        metadata.get.return_value = {'user': 'dfaleye'}
+        return metadata
+   
     def blob1(self, object_name, contained_script, file, blob, blobs_list, read,
               hashlib, metadata, metadata_data, content_type=False):
         if type(blob.download_as_string()) != str:
