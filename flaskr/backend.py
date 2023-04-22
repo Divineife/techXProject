@@ -29,7 +29,7 @@ class Backend:
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
-                 Mock_comment_bucket= False):
+                 Mock_comment_bucket=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -47,9 +47,11 @@ class Backend:
         self.image_bucket = 'authors-images'
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
 
-        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')
+        self.wiki_users_comments = self.storage_client.bucket(
+            'wiki_users_comments')
         self.comment_bucket = 'wiki_users_comments' if Mock_comment_bucket is False else Mock_comment_bucket
         self.json_comments = 'Comments'
+
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         for blob in blobs:
@@ -101,7 +103,6 @@ class Backend:
         #map_author_2_image[blob.name.lower()] = blob.public_url
         #return map_author_2_image
 
-    
     def checkPage_in_commentbucket(self):
         blobs = self.storage_client.list_blobs(self.comment_bucket)
         for blob in blobs:
@@ -109,8 +110,7 @@ class Backend:
                 return blob.download_as_string()
         return False
 
-
-    def add_comment(self, page_comments, page_name,user_name):
+    def add_comment(self, page_comments, page_name, user_name):
         blob = self.wiki_users_comments.blob(self.json_comments)
         #with blob.open("w") as write_file:
         wiki_pages = json.loads(blob.download_as_string())
@@ -121,4 +121,3 @@ class Backend:
 
     def get_comment(self, post):
         pass
-        
