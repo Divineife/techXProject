@@ -29,7 +29,7 @@ class Backend:
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
-                 Mock_comment_bucket= False,
+                 Mock_comment_bucket=False,
                  Mock_session=False):
 
         self.storage_client = storage.Client(
@@ -152,7 +152,7 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
-    
+
     def checkPage_in_commentbucket(self):
         blobs = self.storage_client.list_blobs(self.comment_bucket)
         for blob in blobs:
