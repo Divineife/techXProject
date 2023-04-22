@@ -8,9 +8,19 @@ class Testback_end:
     'This includes test to make sure all of the methods inside of our backend are given the correct outputs without using and dependencies'
 
     @pytest.fixture(scope="class", autouse=True)
+    def get_blob(self):
+        get_blob = MagicMock()
+        return get_blob
+
+    @pytest.fixture(scope="class", autouse=True)
     def list_blobs(self):
         list_blobs = MagicMock()
         return list_blobs
+
+    @pytest.fixture(scope="class", autouse=True)
+    def get_blob(self):
+        get_blob = MagicMock()
+        return get_blob
 
     @pytest.fixture(scope="class", autouse=True)
     def bucket(self):
@@ -93,98 +103,116 @@ class Testback_end:
     def blobs_list(self):
         return []
 
+    @pytest.fixture(scope="class", autouse=True)
+    def get(self):
+        get = MagicMock()
+        get.return_value = 'dfaleye'
+        return get
+
+    @pytest.fixture(scope="class", autouse=True)
+    def session(self):
+        session = MagicMock()
+        return session
+
+    @pytest.fixture(scope="class", autouse=True)
+    def metadata(self):
+        metadata = MagicMock()
+        metadata.get.return_value = {'user': 'dfaleye'}
+        return metadata
+
     def blob1(self, object_name, contained_script, file, blob, blobs_list, read,
-              hashlib):
+              hashlib, metadata, metadata_data):
         blob.download_as_string.return_value.decode.return_value = contained_script
         blob.name = object_name
         blob.contains = (object_name, contained_script)
         blobs_list.append(blob.contains)
         blob.upload_from_file = file
+        blob.metadata.get.return_value = metadata_data
+        blob.delete.return_value = contained_script.replace(
+            contained_script, "")
         blob.read.return_value = contained_script
-        print(blobs_list)
         hashlib.blake2b.return_value.hexdigest.return_value = contained_script
-        print(hashlib.blake2b.return_value.hexdigest())
+        blob.metadata = metadata
         return blob
 
     def backend(self, storage_client, wiki_name, authors_images, password_name,
-                hashlib):
+                hashlib, session):
         return Backend(storage_client, wiki_name, authors_images, self.BytesIO,
-                       password_name, hashlib)
-
-    def test_get_wiki_page(self, blob, storage_client, list_blobs, blobs_list,
-                           bucket, read, hashlib):
-        storage_client.list_blobs.return_value = [
-            self.blob1('ads_file', 'Hello Ads', '/file/ads', blob, blobs_list,
-                       read, hashlib)
-        ]
-        ans = self.backend(storage_client, 'Ads', False, False,
-                           False).get_wiki_page('ads_file')
-
-        storage_client.list_blobs.assert_called_with('Ads')
-        blob.download_as_string().decode.assert_called_once()
-        blob.download_as_string().decode.assert_called_with('utf-8')
-        assert blob.name == 'ads_file'
-        assert ans == 'Hello Ads'
-        assert blob.assert_called_once
+                       password_name, hashlib, session)
 
     def test_get_wiki_page_fail(self, blob, storage_client, list_blobs,
-                                blobs_list, bucket, read, hashlib):
+                                blobs_list, bucket, read, hashlib, metadata):
+        """
+        This method tests if a wiki_page_fails to load.
+        """
         storage_client.list_blobs.return_value = [
             self.blob1('ads_file', 'Hello Ads', '/file/ads', blob, blobs_list,
-                       read, hashlib)
+                       read, hashlib, metadata, {'user': 'dfaleye'})
         ]
-        ans = self.backend(storage_client, 'Ads', False, False,
-                           False).get_wiki_page('ads_file_not_found')
+        ans = self.backend(storage_client, 'Ads', False, False, False,
+                           self.session).get_wiki_page('ads_file_not_found')
 
         storage_client.list_blobs.assert_called_with('Ads')
-        blob.download_as_string().decode.assert_called_once()
         assert blob.name == 'ads_file'
-        blob.download_as_string().decode.assert_called_with('utf-8')
         assert ans == None
         assert blob.assert_called_once
 
     def test_get_all_page(self, blob, storage_client, list_blobs, blobs_list,
-                          bucket, read, hashlib):
+                          bucket, read, hashlib, metadata):
+        """
+        This method tests if the page that renders all pages loads up properly
+        """
         blobs_list.clear()
         storage_client.list_blobs.return_value = [
-            self.blob1('Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list,
-                       read, hashlib),
-            self.blob1('SdsF_file', 'Hello Sds section f', '/file/sds', blob,
-                       blobs_list, read, hashlib)
+            self.blob1('Hello Sds', 'Hello Sds', '/file/sds', blob, blobs_list,
+                       read, hashlib, metadata, "TechExchange"),
+            self.blob1('Hello Sds', 'Hello Sds section f', '/file/sds', blob,
+                       blobs_list, read, hashlib, metadata, "TechExchange")
         ]
-        self.backend(storage_client, 'Sds', False, False,
-                     False).get_all_page_names()
+
+        pages_list = self.backend(storage_client, 'Sds', False, False, False,
+                                  self.session).get_all_page_names()
 
         storage_client.list_blobs.assert_called_with('Sds')
-        assert blobs_list == [('Sds_file', 'Hello Sds'),
-                              ('SdsF_file', 'Hello Sds section f')]
+        assert pages_list == {
+            "TechExchange": ['Hello Sds', 'Hello Sds'],
+            'Internships': [],
+            'Clubs': [],
+            'Events': [],
+            'Other': []
+        }
         assert blob.assert_called_once
 
     def test_upload(self, blob, storage_client, list_blobs, blobs_list, bucket,
-                    read, hashlib):
+                    read, hashlib, metadata, session):
         blobs_list.clear()
         storage_client.list_blobs.return_value = self.blob1(
             'Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list, read,
-            hashlib)
+            hashlib, metadata, {'user': 'dfaleye'})
+
+        session.get.return_value = 'dfaleye'
         bucket.blob.return_value = ['Sds_file']
 
-        self.backend(storage_client, 'Sds', False, False,
-                     False).upload('/file/sds', 'Sds_file')
+        self.backend(storage_client, 'Sds', False, False, False,
+                     session).upload('/file/sds', 'Sds_file', "other")
 
-        storage_client.list_blobs.assert_called_with('Sds')
+        # storage_client.list_blobs.assert_called_with('Sds')
+        session.get.assert_called_with('user')
         assert blob.upload_from_file == '/file/sds'
         assert blob.name == 'Sds_file'
         assert blob.assert_called_once
 
     def test_get_image(self, blob, storage_client, list_blobs, blobs_list,
-                       bucket, f, read, authors_images, hashlib):
+                       bucket, f, read, authors_images, hashlib, metadata):
         blobs_list.clear()
         authors_images.blob.return_value = self.blob1('Sds_file', 'Image',
                                                       '/file/sds', blob,
-                                                      blobs_list, read, hashlib)
+                                                      blobs_list, read, hashlib,
+                                                      metadata,
+                                                      {'user': 'dfaleye'})
         f.read.return_value = 'Hello Sds'
-        self.backend(storage_client, 'Pds', authors_images, False,
-                     False).get_image('Sds_file')
+        self.backend(storage_client, 'Pds', authors_images, False, False,
+                     self.session).get_image('Sds_file')
 
         storage_client.list_blobs.assert_called_with('Sds')
         blob.open.assert_called_with('rb')
@@ -194,13 +222,13 @@ class Testback_end:
         assert blob.assert_called_once
 
     def test_sign_in(self, blob, storage_client, list_blobs, blobs_list, bucket,
-                     read, hashlib):
+                     read, hashlib, metadata):
         storage_client.list_blobs.return_value = [
             self.blob1('fake_username', 'Hello123', '/file/passwords', blob,
-                       blobs_list, read, hashlib)
+                       blobs_list, read, hashlib, metadata, "TechExchange")
         ]
-        ans = self.backend(storage_client, False, False, 'Passwords',
-                           hashlib).sign_in('fake_username', 'Hello123')
+        ans = self.backend(storage_client, False, False, 'Passwords', hashlib,
+                           self.session).sign_in('fake_username', 'Hello123')
 
         storage_client.list_blobs.assert_called_with('Passwords')
         blob.download_as_string().decode.assert_called_with('utf-8')
@@ -208,17 +236,92 @@ class Testback_end:
         assert ans == True
 
     def test_sign_up(self, blob, storage_client, list_blobs, blobs_list, bucket,
-                     read, hashlib):
+                     read, hashlib, metadata):
         blobs_list.clear()
         storage_client.list_blobs.return_value = self.blob1(
             'username_file', 'password', '/file/password', blob, blobs_list,
-            read, hashlib)
+            read, hashlib, metadata, {'user': 'dfaleye'})
         bucket.blob.return_value = ['username_file']
-
-        self.backend(storage_client, 'password', False, 'Passwords',
-                     hashlib).upload('/file/password', 'file/password')
-
+        self.backend(storage_client, 'password', False, 'Passwords', hashlib,
+                     self.session).sign_up('/file/password', 'file/password')
         storage_client.list_blobs.assert_called_with('Passwords')
         assert blob.upload_from_file == '/file/password'
         assert blob.name == 'username_file'
+        assert blob.assert_called_once
+
+    def test_delete(self, blob, storage_client, list_blobs, blobs_list, bucket,
+                    read, hashlib, metadata, session):
+        storage_client.list_blobs.return_value = [
+            self.blob1('Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list,
+                       read, hashlib, metadata, {'user': 'dfaleye'})
+        ]
+
+        session.get.return_value = 'dfaleye'
+        self.backend(storage_client, 'password', False, 'Passwords', hashlib,
+                     session).delete('Sds_file')
+
+        assert blob.delete() == ""
+        session.get.assert_called_with('user')
+        blob.metadata.get.assert_called_with('user_id')
+
+    def test_check_user(self, blob, storage_client, list_blobs, blobs_list,
+                        bucket, read, hashlib, metadata, session):
+        """
+        This is the test for the check_user method in backend.py
+        """
+        session.get.return_value = 'dfaleye'
+        condition = self.backend(storage_client, 'password', False, 'Passwords',
+                                 hashlib,
+                                 session).check_user('Sds_file', 'dfaleye')
+        session.get.assert_called_with('user')
+        assert condition == True
+
+    def test_get_author(self, blob, storage_client, list_blobs, blobs_list,
+                        bucket, read, hashlib, metadata, session):
+        storage_client.list_blobs.return_value = [
+            self.blob1('Sds_file', 'Hello Sds', '/file/sds', blob, blobs_list,
+                       read, hashlib, metadata, {'user': 'dfaleye'})
+        ]
+
+        session.get.return_value = 'dfaleye'
+
+        self.backend(storage_client, 'password', False, 'Passwords', hashlib,
+                     session).get_author('Sds_file')
+
+        blob.metadata.get.assert_called_with('user_id')
+
+    def test_get_wiki_page(self, blob, storage_client, list_blobs, blobs_list,
+                           bucket, read, hashlib, metadata, get_blob):
+        storage_client.list_blobs.return_value = [
+            self.blob1('ads_file', 'Hello Ads', '/file/ads', blob, blobs_list,
+                       read, hashlib, metadata, {'user': 'dfaleye'})
+        ]
+        ans = self.backend(storage_client, 'Ads', False, False, False,
+                           self.session).get_wiki_page('ads_file')
+
+        storage_client.list_blobs.assert_called_with('Ads')
+        blob.download_as_string().decode.assert_called_with('utf-8')
+        assert blob.name == 'ads_file'
+        assert ans == 'Hello Ads'
+        assert blob.assert_called_once
+
+    def test_get_categories(self, blob, storage_client, list_blobs, blobs_list,
+                            bucket, read, hashlib, metadata):
+        categories = self.backend(storage_client, False, False, False, False,
+                                  False).get_categories()
+
+        assert categories == [
+            "TechExchange", "Internships", "Clubs", "Events", "Other"
+        ]
+
+    def test_get_page_category(self, blob, storage_client, list_blobs,
+                               blobs_list, bucket, read, hashlib, metadata,
+                               get_blob):
+        storage_client.bucket.return_value = bucket
+        bucket.get_blob.return_value = blob
+        blob.metadata.get.return_value = "TechExchange"
+        page_category = self.backend(storage_client, 'Sds', False, False, False,
+                                     False).get_page_category("Hello Sds")
+
+        assert page_category == "TechExchange"
         assert blob.assert_called_once
