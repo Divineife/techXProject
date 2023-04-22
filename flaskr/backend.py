@@ -6,6 +6,7 @@ from io import BytesIO
 from flask import request
 import hashlib
 import json
+from flask import session
 """The backend to connect to the Google Cloud to upload and read information
 
 The pages.py will call functions inside this Backend class to be able to verify or get information that the user prompted. The Backend talks to our google bucket that will read or upload from certain files that we specified. It will also check to verify user inputs are valid when given.
@@ -29,10 +30,10 @@ class Backend:
                  Mock_BytesIO=False,
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
+                 Mock_session=False,
                  Mock_comment_bucket= False,
                  Mock_json_comments= False,
                  Mock_json = False):
-                 Mock_session=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -82,7 +83,7 @@ class Backend:
         return categories_w_pages
 
 
-    def upload(self, file, name):
+    def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
         blob = bucket.blob(name)
         blob.metadata = {
@@ -159,6 +160,7 @@ class Backend:
     
     def get_commentbucket(self):
         '''this will go in the comment bucket and access the comments for all the pages in json format'''  
+        print(self.wiki_users_comments)
         blob = self.wiki_users_comments.get_blob(self.json_comments)
         if blob.content_type != "application/json":
             return {}

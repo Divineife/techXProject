@@ -81,7 +81,7 @@ def make_endpoints(app, back_end=False):
             page_username = instance.get_author(page_name)
             authorized = instance.check_user(page_name, page_username)
             page_category = instance.get_page_category(page_name)
-            pages_comments = instance.get_commentBucket()
+            pages_comments = instance.get_commentbucket()
             print(request.method)        
             if page_name not in pages_comments:
                 pages_comments[page_name] = {}

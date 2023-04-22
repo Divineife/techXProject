@@ -142,10 +142,10 @@ class Test_pages:
         assert server_response.status_code == 302
         assert b'"/login"' in server_response.data
     
-    @patch.object(Backend, 'get_commentBucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
+    @patch.object(Backend, 'get_commentbucket', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
     @patch.object(Backend, 'add_comment', return_value = {'ADS_test': {'user_test': ['Comment for testing']}})
     @patch.object(Backend, 'get_wiki_page', return_value = ['hello', 'iterate', 'through', 'this', 'mock_object'])
-    def test_page_inPages_POST(self,mock_get_commentBucket, mock_add_comment,mock_get_wiki_page,client):
+    def test_page_inPages_POST(self,mock_get_commentbucket, mock_add_comment,mock_get_wiki_page,client):
         with client.session_transaction() as fake_session:
             fake_session["user"] = 'danny'         
         server_response = client.post('/pages/ADS') 
