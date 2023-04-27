@@ -203,3 +203,4 @@ class Backend:
         blob = bucket.blob(page_name)
         blob.metadata = {'user_id': self.session.get('user')}
         blob.upload_from_string(content)
+        return True
