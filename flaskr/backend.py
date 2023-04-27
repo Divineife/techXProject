@@ -188,4 +188,17 @@ class Backend:
                 return "Other"
             else:
                 return cur_page_category
+    
+    def edit_wiki_page(self, page_name, new_content, name):
+        # Get the current content of the page
+        content = self.get_wiki_page(page_name)
+
+        # Overwrite the old content with the new content
+        content = new_content
+
+        # Upload the updated content to the Google Cloud bucket
+        bucket = self.storage_client.bucket(self.bucket_name)
+        blob = bucket.blob(page_name)
+        blob.metadata = {'user_id': self.session.get('user')}
+        blob.upload_from_string(content)
 

@@ -164,3 +164,18 @@ def make_endpoints(app, back_end=False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
+    
+    @app.route("/pages/<page_name>/edit", methods=["GET", "POST"])
+    def edit_wiki_page(page_name):
+        if request.method == "POST":
+            new_content = request.form.get("new_content")
+            name = request.form.get("page_name")
+            instance.edit_wiki_page(page_name, new_content, name)
+            return redirect(url_for("wiki_page", page_name=page_name))
+        else:
+            if "user" in session:
+                content = instance.get_wiki_page(page_name)
+                # return redirect(url_for("wiki_page", page_name=page_name))
+                return render_template("wikipage.html", page_name=page_name, content=content)
+            else:
+                return redirect(url_for("login"))
