@@ -43,7 +43,6 @@ def make_endpoints(app, back_end=False):
             else:
                 return redirect('login')
 
-
     @app.route("/pages/")
     def pages():
         """
@@ -53,7 +52,7 @@ def make_endpoints(app, back_end=False):
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>", methods= ['GET', 'POST'])
+    @app.route("/pages/<page_name>", methods=['GET', 'POST'])
     def wiki_page(page_name):
         """
         This route is the endpoint for each specific page
@@ -63,32 +62,35 @@ def make_endpoints(app, back_end=False):
         content = instance.get_wiki_page(page_name)
         if request.method == 'POST':
             username = session['user']
-            #this is a json object 
+            #this is a json object
             pages_comments = instance.get_commentbucket()
             comment = request.form.get('user_comment')
             if page_name not in pages_comments:
                 pages_comments[page_name] = {username: [comment]}
             elif username in pages_comments[page_name]:
-                comments_inpage = pages_comments[page_name] 
+                comments_inpage = pages_comments[page_name]
                 comments_inpage[username].append(comment)
             else:
-                comments_inpage = pages_comments[page_name] 
-                comments_inpage[username] = [comment]          
-            instance.add_comment( pages_comments) 
+                comments_inpage = pages_comments[page_name]
+                comments_inpage[username] = [comment]
+            instance.add_comment(pages_comments)
             return redirect(f"/pages/{page_name}")
-            
+
         elif request.method == 'GET':
             page_username = instance.get_author(page_name)
             authorized = instance.check_user(page_name, page_username)
             page_category = instance.get_page_category(page_name)
             pages_comments = instance.get_commentbucket()
-            print(request.method)        
+            print(request.method)
             if page_name not in pages_comments:
                 pages_comments[page_name] = {}
-            comments_inpage = pages_comments[page_name] 
+            comments_inpage = pages_comments[page_name]
             return render_template('wikipage.html',
-                                content=content,
-                                page_name=page_name, authored=authorized, page_category=page_category,comments_inpage=comments_inpage )
+                                   content=content,
+                                   page_name=page_name,
+                                   authored=authorized,
+                                   page_category=page_category,
+                                   comments_inpage=comments_inpage)
 
     @app.route("/delete/page", methods=["GET", "POST"])
     def delete():
@@ -164,3 +166,20 @@ def make_endpoints(app, back_end=False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
+
+    @app.route("/pages/<page_name>/edit", methods=["GET", "POST"])
+    def edit_wiki_page(page_name):
+        if request.method == "POST":
+            new_content = request.form.get("new_content")
+            name = request.form.get("page_name")
+            instance.edit_wiki_page(page_name, new_content, name)
+            return redirect(url_for("wiki_page", page_name=page_name))
+        else:
+            if "user" in session:
+                content = instance.get_wiki_page(page_name)
+                # return redirect(url_for("wiki_page", page_name=page_name))
+                return render_template("wikipage.html",
+                                       page_name=page_name,
+                                       content=content)
+            else:
+                return redirect(url_for("login"))
