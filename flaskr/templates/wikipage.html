@@ -30,6 +30,7 @@
 </div>
 <button href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit Wiki</button>    
     {% endif %}
+  
     <div id="id01" class="modal">
     <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
     <form class="modal-content modal-delete" action="/delete/page" method="POST">
@@ -52,6 +53,7 @@
             <button type= "submit" >Comment</button>
         </form>
     {% endif %}
+    <h1>Comment Section:</h1>
     {%for user in comments_inpage %} 
         <div>
         {% for comments in comments_inpage[user] %}
