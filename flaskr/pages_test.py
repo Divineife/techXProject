@@ -176,3 +176,26 @@ class Test_pages:
     def test_delete(self, mock_delete, client):
         server_response = client.post("/delete/page")
         assert server_response.status_code == 302
+
+    def test_edit_wiki_page_GET(self, client):
+        # Test GET request
+        response = client.get("/pages/test_page/edit")
+        assert response.status_code == 200
+        assert b"Comment" in response.data
+
+    def test_edit_wiki_page_POST(self, client):
+        # Test POST request
+        with client.session_transaction() as session:
+            session["user"] = "testuser"
+        response = client.post("/pages/test_page/edit",
+                               data={
+                                   "new_content": "new content",
+                                   "page_name": "test_page"
+                               })
+        assert response.status_code == 302
+        assert response.headers["Location"] == "/pages/test_page"
+
+    def test_edit_wiki_page_not_logged_in(self, client):
+        # Test redirect to login page
+        response = client.get("/pages/test_page/edit", follow_redirects=True)
+        assert response.status_code == 200
