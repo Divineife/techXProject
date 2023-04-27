@@ -31,9 +31,9 @@ class Backend:
                  Mock_passwords_bucket=False,
                  Mock_hashlib=False,
                  Mock_session=False,
-                 Mock_comment_bucket= False,
-                 Mock_json_comments= False,
-                 Mock_json = False):
+                 Mock_comment_bucket=False,
+                 Mock_json_comments=False,
+                 Mock_json=False):
 
         self.storage_client = storage.Client(
         ) if Mock_storage_client is False else Mock_storage_client
@@ -52,11 +52,13 @@ class Backend:
         self.BytesIO = BytesIO if Mock_BytesIO is False else Mock_BytesIO
         self.session = session if Mock_session is False else Mock_session
 
-        self.wiki_users_comments = self.storage_client.bucket('wiki_users_comments')  if Mock_comment_bucket is False else Mock_comment_bucket
+        self.wiki_users_comments = self.storage_client.bucket(
+            'wiki_users_comments'
+        ) if Mock_comment_bucket is False else Mock_comment_bucket
         self.comment_bucket = 'wiki_users_comments'
         self.json_comments = 'Comments' if Mock_json_comments is False else Mock_json_comments
         self.json = json if Mock_json is False else Mock_json
-    
+
     def get_wiki_page(self, name):
         blobs = self.storage_client.list_blobs(self.bucket_name)
         print('Code runs here', blobs)
@@ -81,7 +83,6 @@ class Backend:
             categories_w_pages[page_category].append(page_name)
 
         return categories_w_pages
-
 
     def upload(self, file, name, category):
         bucket = self.storage_client.bucket(self.bucket_name)
@@ -157,22 +158,23 @@ class Backend:
         with blob.open('rb') as f:
             output = f.read()
             return self.BytesIO(output)
-    
+
     def get_commentbucket(self):
-        '''this will go in the comment bucket and access the comments for all the pages in json format'''  
+        '''this will go in the comment bucket and access the comments for all the pages in json format'''
         print(self.wiki_users_comments)
         blob = self.wiki_users_comments.get_blob(self.json_comments)
         if blob.content_type != "application/json":
             return {}
         wiki_pages = self.json.loads(blob.download_as_string())
-        return wiki_pages      
+        return wiki_pages
 
     def add_comment(self, page_comments):
         '''this adds the new comment from a page into our bucket using json format '''
         blob = self.wiki_users_comments.get_blob(self.json_comments)
 
-        return blob.upload_from_string(self.json.dumps(page_comments), content_type='application/json')
-       
+        return blob.upload_from_string(self.json.dumps(page_comments),
+                                       content_type='application/json')
+
     def get_categories(self):
         # Returns a list of all the categories that have been pre-determined
         categories = ["TechExchange", "Internships", "Clubs", "Events", "Other"]
@@ -188,7 +190,7 @@ class Backend:
                 return "Other"
             else:
                 return cur_page_category
-    
+
     def edit_wiki_page(self, page_name, new_content, name):
         # Get the current content of the page
         content = self.get_wiki_page(page_name)
@@ -201,4 +203,3 @@ class Backend:
         blob = bucket.blob(page_name)
         blob.metadata = {'user_id': self.session.get('user')}
         blob.upload_from_string(content)
-
