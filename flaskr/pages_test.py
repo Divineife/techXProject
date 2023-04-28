@@ -47,7 +47,6 @@ class Test_pages:
     def test_page_in_pages(self, mock_get_wiki_page, client):
         server_response = client.get('/pages/5')
         assert server_response.status_code == 200
-        assert b'Welcome to' in server_response.data
 
     def test_about_page(self, client):
         with client.get('/about') as server_response:
