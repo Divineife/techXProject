@@ -5,21 +5,70 @@ About This Wiki
 {% endblock %}
 
 {% block content %}
-<h3>About this Wiki</h3>
+<section id="instructors" class="p-5">
+    <style>
+        main{
+            /* display:flex;
+            flex-direction: column;
+            min-height: 93vh; */
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 
-<p>This wiki is your one stop center to all information related to Google Tech Exchange Program</p>
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-<lottie-player src="https://assets5.lottiefiles.com/packages/lf20_w9bdffcb.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop controls autoplay></lottie-player>
+    <div class="container">
+        <h3 class="text-center">About this Wiki</h3>
+        
+        <p>This wiki is your one stop center to all information related to Google Tech Exchange Program</p>
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_w9bdffcb.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop controls autoplay></lottie-player>
 
-<h3>Your Authors</h3>
-<h4>Divine Faleye</h4>
+        <p class="lead text-center mb-5">This wiki is your one stop center to all information related to Google Student Programs!</p>
 
-<h4>Daniel Oluwarotimi</h4>
-<img src= "/images/danieloluwarotimi.jpg" width="100" >
-<img src= "" alt="" width="" height="">
-<h4>Alejandro Olivas</h4>
-<img src=" " alt="" width=" " height=" ">
+        <h3 class="text-center m-5">Your Authors</h3>
 
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card text-dark border-dark">
+                    <div class="card-header text-center border-dark">
+                        <img src= "/images/danieloluwarotimi.jpg" width="100" height="130" class="rounded-circle">
+                    </div>
+                    <div class="card-body text-center bg-primary">
+                        <h4 class="card-title mb-3">Daniel Oluwarotimi</h4>
+                        <p>Student at Morgan State university</p>
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/daniel-oluwarotimi/" class="text-dark"><i data-feather="linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card text-dark border-dark">
+                    <div class="card-header text-center border-dark">
+                        <img src= "https://picsum.photos/id/36/200/100" width="100" height="130" class="rounded-circle">
+                    </div>
+                    <div class="card-body text-center bg-danger">
+                        <h4 class="card-title mb-3">Alejandro Olivas</h4>
+                        <p>Student at University of Texas at El Paso</p>
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/alejandro-olivas-3708651aa/" class="text-dark"><i data-feather="linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card text-dark border-dark">
+                    <div class="card-header text-center border-dark">
+                        <img src= "https://picsum.photos/id/668/200/100" width="100" height="130" class="rounded-circle">
+                    </div>
+                    <div class="card-body text-center bg-warning">
+                        <h4 class="card-title mb-3">Divine Faleye</h4>
+                        <p>Student at Fisk University</p>
+                        <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/divine-f-6812a71ab/" class="text-dark"><i data-feather="linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <!-- TODO(Project 1): Add team members and pictures to about page. -->
 
 {% endblock %}

@@ -1,21 +1,54 @@
 {% extends "base.html" %}
 
-{% block content %} 
+{% block content %}
+<style>
+    main{
+        height:70vh;
+        display:flex;
+        flex-direction: column;
+        align-items:center;
+        justify-content: center;
+    }    
+    .form-signup{
+        width:300px;
+        height:300px;
+    }
+</style>
+<main>
+    <div class="container-fluid">
+        <section class="form-signup m-auto">
+            <form method="post">
+                <h1 class="mb-3 fw-normal">Sign Up</h1>
 
-<h1>Sign Up</h1>
+                <div class="form-floating">
+                    <input class='form-control' type="text" name="username" placeholder="Username"  required/>
+                    <label for="" class="floatingIpnut">Username</label><br/>
+                </div>
 
-<form method="post">
-    <input type="text" name="username" placeholder="Username" required/><br/>
-    <input type="password" name="password" placeholder="Password" required/><br/>
-    <br/>
-    <input type="submit" value="Submit"/>
-</form>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for msg in messages %}
-            <p> {{msg}}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+                <div class="form-floating">
+                    <input class="form-control" type="password" name="password" placeholder="Password" required/>
+                    <label for="" class="floatingInput">Password</label><br/>
+                </div>
 
+                <br/>
+                <input type="submit" value="Submit"/>
+            </form>
+        </section>
+    </div>
+
+    <div class="container-fluid m-3">
+        <section>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>{{ msg }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </section>
+    </div>
+    
+</main>
 {% endblock %}
