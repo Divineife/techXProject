@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+<<<<<<< flaskr/templates/upload.html
 {% block content %}
 <style>
     main{
@@ -36,11 +37,24 @@
                 <div class="col-sm-9 mb-2 mr-sm-2 text-start">
                     <input type="file" class="form-control-file" id="exampleFormControlFile1" name="file" accept=".txt" required>
                 </div>
-            </div>    
-                <button type="submit" class="btn btn-secondary mb-2">Upload</button>
+            </div>   
+
+            <label class="sr-only" for="inlineFormInputCategorie">Categories</label>
+            <div class="mb-2 mr-sm-2">
+                <h4>Choose the Category your file falls under:</h4>
+                <select name="category">
+                    {% for category in categories %}
+                        <option name="category" value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+             
+            <button type="submit" class="btn btn-secondary mb-2">Upload</button>
         </form>
+
+        <div id="error-message" style="color: red; font-weight: bold; margin-top: 10px;"></div>
+
     </div>
 </main>
     
-
 {% endblock %}

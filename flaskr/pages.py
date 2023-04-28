@@ -11,6 +11,7 @@ Typical usage example:
   return render_template('main.html')
   if logged in: return_template('upload.html')
   return redirect('login')
+  
 """
 
 
@@ -32,25 +33,78 @@ def make_endpoints(app, back_end=False):
         if request.method == "POST":
             file = request.files['file']
             name = request.form.get('wikiname')
-            instance.upload(file, name)
-            return "File uploaded successfully"
+            category = request.form['category']
+            instance.upload(file, name, category)
+            return redirect('pages')
         else:
             if 'user' in session:
-                return render_template("upload.html")
+                categories = instance.get_categories()
+                return render_template("upload.html", categories=categories)
             else:
                 return redirect('login')
 
     @app.route("/pages/")
     def pages():
+        """
+        This route is the endpoint to display all pages
+        The list of page names uploaded is passed to the html template
+        """
         page_names = instance.get_all_page_names()
         return render_template('pages.html', page_names=page_names)
 
-    @app.route("/pages/<page_name>")
+    @app.route("/pages/<page_name>", methods=['GET', 'POST'])
     def wiki_page(page_name):
+        """
+        This route is the endpoint for each specific page
+        The content of the webpage is passed as content and the pagename is passed as page_name
+        The status of the user i.e if he is the author of the page is passed as the boolean authored
+        """
         content = instance.get_wiki_page(page_name)
-        return render_template('wikipage.html',
-                               content=content,
-                               page_name=page_name)
+        if request.method == 'POST':
+            username = session['user']
+            #this is a json object
+            pages_comments = instance.get_commentbucket()
+            comment = request.form.get('user_comment')
+            if page_name not in pages_comments:
+                pages_comments[page_name] = {username: [comment]}
+            elif username in pages_comments[page_name]:
+                comments_inpage = pages_comments[page_name]
+                comments_inpage[username].append(comment)
+            else:
+                comments_inpage = pages_comments[page_name]
+                comments_inpage[username] = [comment]
+            instance.add_comment(pages_comments)
+            return redirect(f"/pages/{page_name}")
+
+        elif request.method == 'GET':
+            page_username = instance.get_author(page_name)
+            authorized = instance.check_user(page_name, page_username)
+            page_category = instance.get_page_category(page_name)
+            pages_comments = instance.get_commentbucket()
+            print(request.method)
+            if page_name not in pages_comments:
+                pages_comments[page_name] = {}
+            comments_inpage = pages_comments[page_name]
+            return render_template('wikipage.html',
+                                   content=content,
+                                   page_name=page_name,
+                                   authored=authorized,
+                                   page_category=page_category,
+                                   comments_inpage=comments_inpage)
+
+    @app.route("/delete/page", methods=["GET", "POST"])
+    def delete():
+        """
+        This is the endpoint to delete a wiki-page
+        """
+        page_name = request.form.get('page_name')
+        if 'user' not in session:
+            return redirect("login")
+        else:
+            if instance.delete(page_name):
+                return redirect("/pages/")
+            else:
+                flash("You are not authorized to delete this page")
 
     @app.route("/about")
     def about_page():
@@ -112,3 +166,20 @@ def make_endpoints(app, back_end=False):
             session.pop('user', None)
             flash("Successfully Logged out!", 'info')
             return redirect(url_for("login"))
+
+    @app.route("/pages/<page_name>/edit", methods=["GET", "POST"])
+    def edit_wiki_page(page_name):
+        if request.method == "POST":
+            new_content = request.form.get("new_content")
+            name = request.form.get("page_name")
+            instance.edit_wiki_page(page_name, new_content, name)
+            return redirect(url_for("wiki_page", page_name=page_name))
+        else:
+            if "user" in session:
+                content = instance.get_wiki_page(page_name)
+                # return redirect(url_for("wiki_page", page_name=page_name))
+                return render_template("wikipage.html",
+                                       page_name=page_name,
+                                       content=content)
+            else:
+                return redirect(url_for("login"))

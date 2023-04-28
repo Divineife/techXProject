@@ -16,6 +16,66 @@
     </div>
 </section>
 
+<div>
+    <h2>Welcome to {{page_name}}</h2>
+    <h4>Category: {{ page_category }}</h4>
+    <h4>{{content}}</h4>
+    {% if authored %}
+    <button class = "center" onclick="document.getElementById('id01').style.display='block'">Delete</button>
+ <!-- Modal -->
+<div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit your Wiki Page</h5>
+      </div>
+      <div class="modal-body">
+        <form method="POST" enctype="multipart/form-data" action ="/pages/{{page_name}}/edit">
+            <!-- <label for="content">Edit WIKI:</label><br> -->
+            <input type="hidden" name="page_name" value="{{ page_name }}">
+            <textarea id="content" name="new_content" rows="10" cols="30">{{content}}</textarea><br>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<button href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit Wiki</button>    
+    {% endif %}
+  
+    <div id="id01" class="modal">
+    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
+    <form class="modal-content modal-delete" action="/delete/page" method="POST">
+        <div class="container">
+        <h1>Delete Wiki Page</h1>
+        <p>Are you sure you want to delete your page?</p>
+        <input type="hidden" name="page_name" value="{{ page_name }}">
+        <div class="clearfix">
+            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            <button type="submit" onclick="document.getElementById('id01').style.display='none'" class="deletebtn">Delete</button>
+        </div>
+        </div>
+    </form>
+    </div>
 
-
+    {% if "user" in session %}
+        <form method="POST" action='/pages/{{ page_name }}'>
+            <input type='text' name='user_comment' id="text" placeholder="Enter your comment here!" />
+            <input type="hidden" name="page_name" value="{{ page_name }}">
+            <button type= "submit" >Comment</button>
+        </form>
+    {% endif %}
+    <h1>Comment Section:</h1>
+    {%for user in comments_inpage %} 
+        <div>
+        {% for comments in comments_inpage[user] %}
+            <p>{{ user }}: {{comments}}<p>
+        {% endfor %}
+        </div> 
+    {% endfor %}
+</div>
 {% endblock %}
+
