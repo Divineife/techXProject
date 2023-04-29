@@ -1,14 +1,27 @@
 {% extends "base.html" %}
 
-{% block content %} 
-<h2>Pages contained in this Wiki</h2>
-<div>
-    {% for category in page_names %} 
-        <h5>{{category}}</h1>
-        {% for page in page_names[category] %}
-            <ul><a href="/pages/{{page}}">{{page}}</ul></a> 
-        {% endfor %}
-    {% endfor %}
-</div>
+{% block content %}
 
+<div class="container">
+    <h2>Pages contained in this Wiki</h2>
+    <div class="accordion" id="pages">
+        {% for category in page_names %} 
+        <div class="accordion-item">
+            <h5 class="accordion-header" id="{{category}}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#{{category}}1" aria-expanded="true" aria-controls="{{category}}1">
+                    {{category}}
+                </button>
+            </h5>
+            <div class="accordion-collapse collapse hidden" id="{{category}}1" aria-labelledby="{{category}}" data-bs-parent="#pages">
+                {% for page in page_names[category] %}
+                <div class="accordion-body">
+                    
+                        <a href="/pages/{{page}}">{{page}}</a> 
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
