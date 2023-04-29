@@ -6,6 +6,7 @@
     <div class="container">
         <div>
             <h1 class="fw-bolder ">{{ page_name }}</h1>
+            <h4>Category: {{ page_category }}</h4>
         </div>
     </div>
 </section>
@@ -17,9 +18,9 @@
 </section>
 
 <div>
-    <h2>Welcome to {{page_name}}</h2>
+    <!-- <h2>Welcome to {{page_name}}</h2>
     <h4>Category: {{ page_category }}</h4>
-    <h4>{{content}}</h4>
+    <h4>{{content}}</h4> -->
     {% if authored %}
     <button class = "center" onclick="document.getElementById('id01').style.display='block'">Delete</button>
  <!-- Modal -->
